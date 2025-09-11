@@ -12,7 +12,15 @@ const baseConfig: NextConfig = {
       }
     ]
   },
-  transpilePackages: ['geist']
+  transpilePackages: ['geist'],
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",             // frontend request
+        destination: "http://localhost:3000/:path*", // your backend service in dev
+      },
+    ];
+  },
 };
 
 let configWithPlugins = baseConfig;
@@ -52,6 +60,9 @@ if (!process.env.NEXT_PUBLIC_SENTRY_DISABLED) {
     telemetry: false
   });
 }
+
+
+
 
 const nextConfig = configWithPlugins;
 export default nextConfig;

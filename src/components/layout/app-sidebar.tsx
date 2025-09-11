@@ -31,7 +31,7 @@ import {
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
 import { navItems } from '@/constants/data';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useUser } from '@clerk/nextjs';
+// import { useUser } from '@clerk/nextjs';
 import {
   IconBell,
   IconChevronRight,
@@ -41,12 +41,16 @@ import {
   IconPhotoUp,
   IconUserCircle
 } from '@tabler/icons-react';
-import { SignOutButton } from '@clerk/nextjs';
+// import { SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
 import { OrgSwitcher } from '../org-switcher';
+import { useAuthStore } from '@/lib/userStore';
+import { Button } from '../ui/button';
+import api from '@/lib/apiService';
+import { toast } from 'sonner';
 export const company = {
   name: 'Acme Inc',
   logo: IconPhotoUp,
@@ -54,15 +58,13 @@ export const company = {
 };
 
 const tenants = [
-  { id: '1', name: 'Acme Inc' },
-  { id: '2', name: 'Beta Corp' },
-  { id: '3', name: 'Gamma Ltd' }
+  { id: '1', name: 'Raika photography' },
 ];
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
-  const { user } = useUser();
+  const { user,logout } = useAuthStore();
   const router = useRouter();
   const handleSwitchTenant = (_tenantId: string) => {
     // Tenant switching functionality would be implemented here
@@ -72,7 +74,8 @@ export default function AppSidebar() {
 
   React.useEffect(() => {
     // Side effects based on sidebar state changes
-  }, [isOpen]);
+    
+  }, [isOpen,user]);
 
   return (
     <Sidebar collapsible='icon'>
@@ -176,7 +179,7 @@ export default function AppSidebar() {
                         showInfo
                         user={user}
                       />
-                    )}
+                    )} 
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -198,9 +201,19 @@ export default function AppSidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={async()=>{
+                    await api.get('/auth/logout').then(()=>{
+                      logout()
+                      toast.success("see you soon")
+                      router.push('/')
+                    }).catch((err)=>{
+                      console.log(err);
+                      
+                      toast.error(err.message || "unknow err")
+                      })}}>
                   <IconLogout className='mr-2 h-4 w-4' />
-                  <SignOutButton redirectUrl='/auth/sign-in' />
+                  Logout
+    
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

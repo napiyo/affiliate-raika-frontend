@@ -1,5 +1,4 @@
 import Providers from '@/components/layout/providers';
-import { Toaster } from '@/components/ui/sonner';
 import { fontVariables } from '@/lib/font';
 import ThemeProvider from '@/components/layout/ThemeToggle/theme-provider';
 import { cn } from '@/lib/utils';
@@ -9,6 +8,8 @@ import NextTopLoader from 'nextjs-toploader';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import './globals.css';
 import './theme.css';
+import { Toaster } from 'sonner';
+import UserProvider from '@/lib/userProvider';
 
 const META_THEME_COLORS = {
   light: '#ffffff',
@@ -58,18 +59,20 @@ export default async function RootLayout({
       >
         <NextTopLoader showSpinner={false} />
         <NuqsAdapter>
+            <Toaster richColors position="top-right" />
+          <UserProvider>
           <ThemeProvider
             attribute='class'
             defaultTheme='system'
             enableSystem
             disableTransitionOnChange
             enableColorScheme
-          >
+            >
             <Providers activeThemeValue={activeThemeValue as string}>
-              <Toaster />
               {children}
             </Providers>
           </ThemeProvider>
+          </UserProvider>
         </NuqsAdapter>
       </body>
     </html>

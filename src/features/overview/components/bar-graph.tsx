@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 import {
   Card,
@@ -16,113 +16,114 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart';
+import api from '@/lib/apiService';
 
 export const description = 'An interactive bar chart';
 
-const chartData = [
-  { date: '2024-04-01', desktop: 222, mobile: 150 },
-  { date: '2024-04-02', desktop: 97, mobile: 180 },
-  { date: '2024-04-03', desktop: 167, mobile: 120 },
-  { date: '2024-04-04', desktop: 242, mobile: 260 },
-  { date: '2024-04-05', desktop: 373, mobile: 290 },
-  { date: '2024-04-06', desktop: 301, mobile: 340 },
-  { date: '2024-04-07', desktop: 245, mobile: 180 },
-  { date: '2024-04-08', desktop: 409, mobile: 320 },
-  { date: '2024-04-09', desktop: 59, mobile: 110 },
-  { date: '2024-04-10', desktop: 261, mobile: 190 },
-  { date: '2024-04-11', desktop: 327, mobile: 350 },
-  { date: '2024-04-12', desktop: 292, mobile: 210 },
-  { date: '2024-04-13', desktop: 342, mobile: 380 },
-  { date: '2024-04-14', desktop: 137, mobile: 220 },
-  { date: '2024-04-15', desktop: 120, mobile: 170 },
-  { date: '2024-04-16', desktop: 138, mobile: 190 },
-  { date: '2024-04-17', desktop: 446, mobile: 360 },
-  { date: '2024-04-18', desktop: 364, mobile: 410 },
-  { date: '2024-04-19', desktop: 243, mobile: 180 },
-  { date: '2024-04-20', desktop: 89, mobile: 150 },
-  { date: '2024-04-21', desktop: 137, mobile: 200 },
-  { date: '2024-04-22', desktop: 224, mobile: 170 },
-  { date: '2024-04-23', desktop: 138, mobile: 230 },
-  { date: '2024-04-24', desktop: 387, mobile: 290 },
-  { date: '2024-04-25', desktop: 215, mobile: 250 },
-  { date: '2024-04-26', desktop: 75, mobile: 130 },
-  { date: '2024-04-27', desktop: 383, mobile: 420 },
-  { date: '2024-04-28', desktop: 122, mobile: 180 },
-  { date: '2024-04-29', desktop: 315, mobile: 240 },
-  { date: '2024-04-30', desktop: 454, mobile: 380 },
-  { date: '2024-05-01', desktop: 165, mobile: 220 },
-  { date: '2024-05-02', desktop: 293, mobile: 310 },
-  { date: '2024-05-03', desktop: 247, mobile: 190 },
-  { date: '2024-05-04', desktop: 385, mobile: 420 },
-  { date: '2024-05-05', desktop: 481, mobile: 390 },
-  { date: '2024-05-06', desktop: 498, mobile: 520 },
-  { date: '2024-05-07', desktop: 388, mobile: 300 },
-  { date: '2024-05-08', desktop: 149, mobile: 210 },
-  { date: '2024-05-09', desktop: 227, mobile: 180 },
-  { date: '2024-05-10', desktop: 293, mobile: 330 },
-  { date: '2024-05-11', desktop: 335, mobile: 270 },
-  { date: '2024-05-12', desktop: 197, mobile: 240 },
-  { date: '2024-05-13', desktop: 197, mobile: 160 },
-  { date: '2024-05-14', desktop: 448, mobile: 490 },
-  { date: '2024-05-15', desktop: 473, mobile: 380 },
-  { date: '2024-05-16', desktop: 338, mobile: 400 },
-  { date: '2024-05-17', desktop: 499, mobile: 420 },
-  { date: '2024-05-18', desktop: 315, mobile: 350 },
-  { date: '2024-05-19', desktop: 235, mobile: 180 },
-  { date: '2024-05-20', desktop: 177, mobile: 230 },
-  { date: '2024-05-21', desktop: 82, mobile: 140 },
-  { date: '2024-05-22', desktop: 81, mobile: 120 },
-  { date: '2024-05-23', desktop: 252, mobile: 290 },
-  { date: '2024-05-24', desktop: 294, mobile: 220 },
-  { date: '2024-05-25', desktop: 201, mobile: 250 },
-  { date: '2024-05-26', desktop: 213, mobile: 170 },
-  { date: '2024-05-27', desktop: 420, mobile: 460 },
-  { date: '2024-05-28', desktop: 233, mobile: 190 },
-  { date: '2024-05-29', desktop: 78, mobile: 130 },
-  { date: '2024-05-30', desktop: 340, mobile: 280 },
-  { date: '2024-05-31', desktop: 178, mobile: 230 },
-  { date: '2024-06-01', desktop: 178, mobile: 200 },
-  { date: '2024-06-02', desktop: 470, mobile: 410 },
-  { date: '2024-06-03', desktop: 103, mobile: 160 },
-  { date: '2024-06-04', desktop: 439, mobile: 380 },
-  { date: '2024-06-05', desktop: 88, mobile: 140 },
-  { date: '2024-06-06', desktop: 294, mobile: 250 },
-  { date: '2024-06-07', desktop: 323, mobile: 370 },
-  { date: '2024-06-08', desktop: 385, mobile: 320 },
-  { date: '2024-06-09', desktop: 438, mobile: 480 },
-  { date: '2024-06-10', desktop: 155, mobile: 200 },
-  { date: '2024-06-11', desktop: 92, mobile: 150 },
-  { date: '2024-06-12', desktop: 492, mobile: 420 },
-  { date: '2024-06-13', desktop: 81, mobile: 130 },
-  { date: '2024-06-14', desktop: 426, mobile: 380 },
-  { date: '2024-06-15', desktop: 307, mobile: 350 },
-  { date: '2024-06-16', desktop: 371, mobile: 310 },
-  { date: '2024-06-17', desktop: 475, mobile: 520 },
-  { date: '2024-06-18', desktop: 107, mobile: 170 },
-  { date: '2024-06-19', desktop: 341, mobile: 290 },
-  { date: '2024-06-20', desktop: 408, mobile: 450 },
-  { date: '2024-06-21', desktop: 169, mobile: 210 },
-  { date: '2024-06-22', desktop: 317, mobile: 270 },
-  { date: '2024-06-23', desktop: 480, mobile: 530 },
-  { date: '2024-06-24', desktop: 132, mobile: 180 },
-  { date: '2024-06-25', desktop: 141, mobile: 190 },
-  { date: '2024-06-26', desktop: 434, mobile: 380 },
-  { date: '2024-06-27', desktop: 448, mobile: 490 },
-  { date: '2024-06-28', desktop: 149, mobile: 200 },
-  { date: '2024-06-29', desktop: 103, mobile: 160 },
-  { date: '2024-06-30', desktop: 446, mobile: 400 }
+const samplechartData = [
+  { date: '2024-04-01', leads: 222, leadsConv: 150 },
+  { date: '2024-04-02', leads: 97, leadsConv: 180 },
+  { date: '2024-04-03', leads: 167, leadsConv: 120 },
+  { date: '2024-04-04', leads: 242, leadsConv: 260 },
+  { date: '2024-04-05', leads: 373, leadsConv: 290 },
+  { date: '2024-04-06', leads: 301, leadsConv: 340 },
+  { date: '2024-04-07', leads: 245, leadsConv: 180 },
+  { date: '2024-04-08', leads: 409, leadsConv: 320 },
+  { date: '2024-04-09', leads: 59, leadsConv: 110 },
+  { date: '2024-04-10', leads: 261, leadsConv: 190 },
+  { date: '2024-04-11', leads: 327, leadsConv: 350 },
+  { date: '2024-04-12', leads: 292, leadsConv: 210 },
+  { date: '2024-04-13', leads: 342, leadsConv: 380 },
+  { date: '2024-04-14', leads: 137, leadsConv: 220 },
+  { date: '2024-04-15', leads: 120, leadsConv: 170 },
+  { date: '2024-04-16', leads: 138, leadsConv: 190 },
+  { date: '2024-04-17', leads: 446, leadsConv: 360 },
+  { date: '2024-04-18', leads: 364, leadsConv: 410 },
+  { date: '2024-04-19', leads: 243, leadsConv: 180 },
+  { date: '2024-04-20', leads: 89, leadsConv: 150 },
+  { date: '2024-04-21', leads: 137, leadsConv: 200 },
+  { date: '2024-04-22', leads: 224, leadsConv: 170 },
+  { date: '2024-04-23', leads: 138, leadsConv: 230 },
+  { date: '2024-04-24', leads: 387, leadsConv: 290 },
+  { date: '2024-04-25', leads: 215, leadsConv: 250 },
+  { date: '2024-04-26', leads: 75, leadsConv: 130 },
+  { date: '2024-04-27', leads: 383, leadsConv: 420 },
+  { date: '2024-04-28', leads: 122, leadsConv: 180 },
+  { date: '2024-04-29', leads: 315, leadsConv: 240 },
+  { date: '2024-04-30', leads: 454, leadsConv: 380 },
+  { date: '2024-05-01', leads: 165, leadsConv: 220 },
+  { date: '2024-05-02', leads: 293, leadsConv: 310 },
+  { date: '2024-05-03', leads: 247, leadsConv: 190 },
+  { date: '2024-05-04', leads: 385, leadsConv: 420 },
+  { date: '2024-05-05', leads: 481, leadsConv: 390 },
+  { date: '2024-05-06', leads: 498, leadsConv: 520 },
+  { date: '2024-05-07', leads: 388, leadsConv: 300 },
+  { date: '2024-05-08', leads: 149, leadsConv: 210 },
+  { date: '2024-05-09', leads: 227, leadsConv: 180 },
+  { date: '2024-05-10', leads: 293, leadsConv: 330 },
+  { date: '2024-05-11', leads: 335, leadsConv: 270 },
+  { date: '2024-05-12', leads: 197, leadsConv: 240 },
+  { date: '2024-05-13', leads: 197, leadsConv: 160 },
+  { date: '2024-05-14', leads: 448, leadsConv: 490 },
+  { date: '2024-05-15', leads: 473, leadsConv: 380 },
+  { date: '2024-05-16', leads: 338, leadsConv: 400 },
+  { date: '2024-05-17', leads: 499, leadsConv: 420 },
+  { date: '2024-05-18', leads: 315, leadsConv: 350 },
+  { date: '2024-05-19', leads: 235, leadsConv: 180 },
+  { date: '2024-05-20', leads: 177, leadsConv: 230 },
+  { date: '2024-05-21', leads: 82, leadsConv: 140 },
+  { date: '2024-05-22', leads: 81, leadsConv: 120 },
+  { date: '2024-05-23', leads: 252, leadsConv: 290 },
+  { date: '2024-05-24', leads: 294, leadsConv: 220 },
+  { date: '2024-05-25', leads: 201, leadsConv: 250 },
+  { date: '2024-05-26', leads: 213, leadsConv: 170 },
+  { date: '2024-05-27', leads: 420, leadsConv: 460 },
+  { date: '2024-05-28', leads: 233, leadsConv: 190 },
+  { date: '2024-05-29', leads: 78, leadsConv: 130 },
+  { date: '2024-05-30', leads: 340, leadsConv: 280 },
+  { date: '2024-05-31', leads: 178, leadsConv: 230 },
+  { date: '2024-06-01', leads: 178, leadsConv: 200 },
+  { date: '2024-06-02', leads: 470, leadsConv: 410 },
+  { date: '2024-06-03', leads: 103, leadsConv: 160 },
+  { date: '2024-06-04', leads: 439, leadsConv: 380 },
+  { date: '2024-06-05', leads: 88, leadsConv: 140 },
+  { date: '2024-06-06', leads: 294, leadsConv: 250 },
+  { date: '2024-06-07', leads: 323, leadsConv: 370 },
+  { date: '2024-06-08', leads: 385, leadsConv: 320 },
+  { date: '2024-06-09', leads: 438, leadsConv: 480 },
+  { date: '2024-06-10', leads: 155, leadsConv: 200 },
+  { date: '2024-06-11', leads: 92, leadsConv: 150 },
+  { date: '2024-06-12', leads: 492, leadsConv: 420 },
+  { date: '2024-06-13', leads: 81, leadsConv: 130 },
+  { date: '2024-06-14', leads: 426, leadsConv: 380 },
+  { date: '2024-06-15', leads: 307, leadsConv: 350 },
+  { date: '2024-06-16', leads: 371, leadsConv: 310 },
+  { date: '2024-06-17', leads: 475, leadsConv: 520 },
+  { date: '2024-06-18', leads: 107, leadsConv: 170 },
+  { date: '2024-06-19', leads: 341, leadsConv: 290 },
+  { date: '2024-06-20', leads: 408, leadsConv: 450 },
+  { date: '2024-06-21', leads: 169, leadsConv: 210 },
+  { date: '2024-06-22', leads: 317, leadsConv: 270 },
+  { date: '2024-06-23', leads: 480, leadsConv: 530 },
+  { date: '2024-06-24', leads: 132, leadsConv: 180 },
+  { date: '2024-06-25', leads: 141, leadsConv: 190 },
+  { date: '2024-06-26', leads: 434, leadsConv: 380 },
+  { date: '2024-06-27', leads: 448, leadsConv: 490 },
+  { date: '2024-06-28', leads: 149, leadsConv: 200 },
+  { date: '2024-06-29', leads: 103, leadsConv: 160 },
+  { date: '2024-06-30', leads: 446, leadsConv: 400 }
 ];
 
 const chartConfig = {
-  views: {
-    label: 'Page Views'
-  },
-  desktop: {
-    label: 'Desktop',
+  // views: {
+  //   label: 'Page Views'
+  // },
+  leads: {
+    label: 'Leads',
     color: 'var(--primary)'
   },
-  mobile: {
-    label: 'Mobile',
+  leadsConv: {
+    label: 'Converted Leads',
     color: 'var(--primary)'
   },
   error: {
@@ -133,25 +134,43 @@ const chartConfig = {
 
 export function BarGraph() {
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>('desktop');
+    React.useState<keyof typeof chartConfig>('leads');
 
-  const total = React.useMemo(
-    () => ({
-      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
-      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0)
-    }),
-    []
-  );
+  // const total = React.useMemo(
+  //   () => ({
+  //     leads: chartData.reduce((acc, curr) => acc + curr.leads, 0),
+  //     leadsConv: chartData.reduce((acc, curr) => acc + curr.leadsConv, 0)
+  //   }),
+  //   []
+  // );
 
   const [isClient, setIsClient] = React.useState(false);
-
+  const [chartData, setChartData] = React.useState(samplechartData);
+  const [totals, setTotals] = React.useState({totalLeads:0,totalConverted:0});
+   
   React.useEffect(() => {
     setIsClient(true);
+     const leadData = async()=>{
+      try{
+
+        const res  = await api.get('/dashboard/leadsOverview');
+        setChartData(res.data.data)
+        // log
+        setTotals({totalLeads:res.data?.totals?.totalLeads || 0,totalConverted:res.data?.totals?.totalConverted || 0})
+        
+      }
+      catch(err){
+        console.log(err);
+        
+        setActiveChart('error')
+      }
+     }
+     leadData();
   }, []);
 
   React.useEffect(() => {
     if (activeChart === 'error') {
-      throw new Error('Mocking Error');
+      throw new Error('Opps failed to lead overview');
     }
   }, [activeChart]);
 
@@ -163,18 +182,18 @@ export function BarGraph() {
     <Card className='@container/card !pt-3'>
       <CardHeader className='flex flex-col items-stretch space-y-0 border-b !p-0 sm:flex-row'>
         <div className='flex flex-1 flex-col justify-center gap-1 px-6 !py-0'>
-          <CardTitle>Bar Chart - Interactive</CardTitle>
+          <CardTitle>Leads Overview</CardTitle>
           <CardDescription>
             <span className='hidden @[540px]/card:block'>
-              Total for the last 3 months
+              Total Leads generated in last 30 days
             </span>
-            <span className='@[540px]/card:hidden'>Last 3 months</span>
+            <span className='@[540px]/card:hidden'>Last 30 days</span>
           </CardDescription>
         </div>
         <div className='flex'>
-          {['desktop', 'mobile', 'error'].map((key) => {
+          {['leads', 'leadsConv'].map((key) => {
             const chart = key as keyof typeof chartConfig;
-            if (!chart || total[key as keyof typeof total] === 0) return null;
+            // if (!chart ||  === 0) return null;
             return (
               <button
                 key={chart}
@@ -186,7 +205,7 @@ export function BarGraph() {
                   {chartConfig[chart].label}
                 </span>
                 <span className='text-lg leading-none font-bold sm:text-3xl'>
-                  {total[key as keyof typeof total]?.toLocaleString()}
+                  {key=='leads'?totals.totalLeads:totals.totalConverted}
                 </span>
               </button>
             );
@@ -234,12 +253,14 @@ export function BarGraph() {
                 });
               }}
             />
+                <YAxis allowDecimals={false} domain={[0, 'dataMax']} />
             <ChartTooltip
               cursor={{ fill: 'var(--primary)', opacity: 0.1 }}
               content={
                 <ChartTooltipContent
                   className='w-[150px]'
-                  nameKey='views'
+                  nameKey='leads'
+                   defaultValue={0}
                   labelFormatter={(value) => {
                     return new Date(value).toLocaleDateString('en-US', {
                       month: 'short',

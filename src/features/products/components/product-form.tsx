@@ -1,6 +1,6 @@
 'use client';
 
-import { FileUploader } from '@/components/file-uploader';
+// import { FileUploader } from '@/components/file-uploader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -96,7 +96,7 @@ export default function ProductForm({
                   <FormItem className='w-full'>
                     <FormLabel>Images</FormLabel>
                     <FormControl>
-                      <FileUploader
+                      {/* <FileUploader
                         value={field.value}
                         onValueChange={field.onChange}
                         maxFiles={4}
@@ -106,7 +106,7 @@ export default function ProductForm({
                         // pass the onUpload function here for direct upload
                         // onUpload={uploadFiles}
                         // disabled={isUploading}
-                      />
+                      /> */}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
