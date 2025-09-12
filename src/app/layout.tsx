@@ -17,8 +17,8 @@ const META_THEME_COLORS = {
 };
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'Raika photography',
+  description: 'Affiliate Raika photography'
 };
 
 export const viewport: Viewport = {

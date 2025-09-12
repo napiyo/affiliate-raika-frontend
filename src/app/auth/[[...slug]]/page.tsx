@@ -5,6 +5,7 @@ import api from '@/lib/apiService';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/userStore';
+import PageContainer from '@/components/layout/page-container';
 
 
 
@@ -129,8 +130,7 @@ export default  function AuthContainer() {
     }
   };
 
-  return (
-    <div className="bg-gradient-to-br relative flex-1 from-black via-gray-900 to-black flex  items-center justify-center p-4">
+  return ( <div className="bg-gradient-to-br flex-1 relative from-black via-gray-900 to-black flex  items-center justify-center p-4">
       {/* Static background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -inset-10 opacity-20">
@@ -470,6 +470,7 @@ export default  function AuthContainer() {
         </div>
       </div>
     </div>
+   
   );
 };
 
