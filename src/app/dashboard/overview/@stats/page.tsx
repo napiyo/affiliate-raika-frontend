@@ -2,7 +2,7 @@
 import PageContainer from '@/components/layout/page-container';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { delay } from '@/constants/mock-api';
+
 import { RecentSales } from '@/features/overview/components/recent-sales';
 import api from '@/lib/apiService';
 import { Separator } from '@radix-ui/react-dropdown-menu';
