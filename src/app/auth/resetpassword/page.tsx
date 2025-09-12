@@ -32,11 +32,7 @@ interface PasswordRequirement {
 export default function ResetPasswordUI(): JSX.Element {
      const token = useSearchParams().get('token');
       const router = useRouter()
-      if(!token)
-      {
-          router.push("/");
-          return <></>;
-      }
+    
   const [formData, setFormData] = useState<FormData>({
     newPassword: '',
     confirmPassword: ''
@@ -134,7 +130,11 @@ export default function ResetPasswordUI(): JSX.Element {
       setShowConfirmPassword(prev => !prev);
     }
   };
-
+  if(!token)
+    {
+        router.push("/");
+        return <></>;
+    }
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

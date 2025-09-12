@@ -1,7 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ArrowLeft, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import PageContainer from '@/components/layout/page-container';
 import api from '@/lib/apiService';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -21,11 +20,6 @@ interface SignupForm {
   phone: string;
 }
 
-interface ApiResponse {
-  success: boolean;
-  message?: string;
-  data?:any;
-}
 
 
 
