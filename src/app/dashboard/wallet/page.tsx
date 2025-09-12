@@ -171,7 +171,7 @@ const [pagination, setPagination] = useState({
             url+= '?id='+id
         }
         const res =  await api.get(url); // yup, ?id is wrong, me is for me, but due to time issue, Im doing it
-        console.log(res);
+        // console.log(res);
         
        
         

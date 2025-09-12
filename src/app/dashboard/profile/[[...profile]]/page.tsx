@@ -20,7 +20,7 @@ const ProfilePage = () => {
   const [copied, setCopied] = useState(false);
   
   const {user} = useAuthStore();
-  console.log(user);
+  // console.log(user);
   
   if(!user) {
 

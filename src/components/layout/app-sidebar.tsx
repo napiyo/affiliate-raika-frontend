@@ -51,6 +51,7 @@ import { useAuthStore } from '@/lib/userStore';
 import { Button } from '../ui/button';
 import api from '@/lib/apiService';
 import { toast } from 'sonner';
+import { Role_ENUM } from '@/types/user';
 export const company = {
   name: 'Acme Inc',
   logo: IconPhotoUp,
@@ -91,6 +92,7 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarMenu>
             {navItems.map((item) => {
+              if(item.isAdmin && user?.role !== Role_ENUM.ADMIN) return null;
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible
@@ -191,14 +193,14 @@ export default function AppSidebar() {
                     <IconUserCircle className='mr-2 h-4 w-4' />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  {/* <DropdownMenuItem>
                     <IconCreditCard className='mr-2 h-4 w-4' />
                     Billing
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <IconBell className='mr-2 h-4 w-4' />
                     Notifications
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={async()=>{

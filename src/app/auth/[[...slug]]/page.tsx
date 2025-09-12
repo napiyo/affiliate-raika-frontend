@@ -72,7 +72,7 @@ export default  function AuthContainer() {
         setSuccess('Login successful! Redirecting...');
       router.push("/");
    }).catch((error)=>{
-    console.log(error);
+    // console.log(error);
     
     setError(error.data?error.data.message:error.message);
    });

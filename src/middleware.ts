@@ -1,6 +1,8 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import api from "./lib/apiService";
+import { Role_ENUM, User } from "./types/user";
 
 interface JwtPayload {
   id: string;
@@ -9,15 +11,16 @@ interface JwtPayload {
 
 // Environment variables for configuration
 const PUBLIC_PATHS = ["/auth", "/public"];
-const ADMIN_PATHS = ["/admin"];
+const ADMIN_PATHS = ["admin"];
 const DASHBOARD_PATH = "/dashboard";
 const LOGIN_PATH = "/auth";
 const FORBIDDEN_PATH = "/403";
-const API_BASE = process.env.BACKEND_API_URL;
+// const API_BASE = process.env.BACKEND_API_URL;
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const jwt = req.cookies.get("jwt")?.value;
+  // console.log("token is ",jwt);
   
   const isPublicPath = (path: string) => PUBLIC_PATHS.some((p) => path.startsWith(p));
   const isAdminPath = (path: string) => ADMIN_PATHS.some((p) => path.includes(p));
@@ -40,12 +43,11 @@ export async function middleware(req: NextRequest) {
   // Handle admin-only routes for authenticated users
   if (jwt && isAdminPath(pathname)) {
     try {
-      const payload: JwtPayload = await verifyJwtWithBackend(jwt);
-      if (payload.role !== "admin") {
+      const payload: User = await verifyJwtWithBackend(jwt);
+      if (payload.role !== Role_ENUM.ADMIN) {
         return NextResponse.redirect(new URL(FORBIDDEN_PATH, req.url));
       }
     } catch (error) {
-      // Token is invalid or expired, redirect to login
       return NextResponse.redirect(new URL(LOGIN_PATH, req.url));
     }
   }
@@ -53,19 +55,25 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-async function verifyJwtWithBackend(jwt: string): Promise<JwtPayload> {
-  const res = await fetch(`${API_BASE}/auth/me`, {
+async function verifyJwtWithBackend(jwt: string): Promise<User> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE}/auth/me`, {
     method: "GET",
-    headers: { Cookie: `jwt=${jwt}` },
+    headers: {
+      // Send only the jwt cookie to backend
+      cookie: `jwt=${jwt}`,
+    },
     cache: "no-store",
   });
-
+  
   if (!res.ok) {
-    throw new Error("Token verification failed");
+    throw new Error("Invalid JWT");
   }
-
-  return res.json();
+  
+  const data = await res.json();
+  // console.log("res from auth",data);
+  return data.data as User;
 }
+
 
 export const config = {
   matcher: [

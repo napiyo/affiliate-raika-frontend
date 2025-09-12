@@ -70,7 +70,7 @@ export default function BarGraph() {
         });
         
       } catch (err) {
-        console.log(err);
+        // console.log(err);
         setActiveChart('error');
       }
     };

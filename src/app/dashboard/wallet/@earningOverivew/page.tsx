@@ -29,7 +29,7 @@ export default function WalletChart({id}:{id?:String | undefined}) {
     const getData = async()=>{
 
       const resChart = await api.post('dashboard/earningOverview',{userId:id});
-      console.log(resChart.data.data);
+      // console.log(resChart.data.data);
       
       setData(resChart.data.data)
     }

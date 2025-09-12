@@ -72,6 +72,7 @@ export const navItems: NavItem[] = [
     icon: 'users',
     shortcut: ['u', 'u'],
     isActive: false,
+    isAdmin:true,
     items: [] // No child items
   }
 ];
