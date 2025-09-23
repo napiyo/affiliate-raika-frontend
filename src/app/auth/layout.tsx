@@ -8,5 +8,5 @@ export default async function authLayout({
   }: {
     children: React.ReactNode;
   }) {
-    return <div className='min-h-screen min-w-screen flex'>{children}</div>
+    return <div className='min-h-screen min-w-screen flex text-sm'>{children}</div>
   }

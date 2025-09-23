@@ -44,7 +44,7 @@ export async function middleware(req: NextRequest) {
   if (jwt && isAdminPath(pathname)) {
     try {
       const payload: User = await verifyJwtWithBackend(jwt);
-      if (payload.role !== Role_ENUM.ADMIN) {
+      if (payload.role !== Role_ENUM.ADMIN && payload.role !== Role_ENUM.SALES) {
         return NextResponse.redirect(new URL(FORBIDDEN_PATH, req.url));
       }
     } catch (error) {

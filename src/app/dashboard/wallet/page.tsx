@@ -428,6 +428,7 @@ const [pagination, setPagination] = useState({
                     <TableHead>Comment</TableHead>
                     <TableHead>Date</TableHead>
                     {user?.role == Role_ENUM.ADMIN &&<TableHead>User</TableHead> }
+                    {user?.role == Role_ENUM.ADMIN &&<TableHead>Created by</TableHead> }
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -442,7 +443,7 @@ const [pagination, setPagination] = useState({
                         </Badge>
                       </TableCell>
                       <TableCell className={transaction.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'}>
-                        {transaction.type === 'CREDIT' ? '+' : '-'}${transaction.amount.toFixed(2)}
+                        {transaction.type === 'CREDIT' ? '+' : '-'}{transaction.amount.toFixed(2)} ₹
                       </TableCell>
                       <TableCell>
                         
@@ -463,6 +464,14 @@ const [pagination, setPagination] = useState({
                         </Link>
                       </TableCell>
                     }
+                     {user?.role == Role_ENUM.ADMIN &&
+
+                  <TableCell >
+                  <Link href={`admin/users/${transaction.createdBy}`} className='bg-primary text-primary-foreground px-3 py-1 rounded-2xl' >
+                   created By
+                  </Link>
+                  </TableCell>
+                  }
                     </TableRow>
                   ))}
                 </TableBody>

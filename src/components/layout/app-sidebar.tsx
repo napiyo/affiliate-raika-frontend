@@ -92,7 +92,7 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarMenu>
             {navItems.map((item) => {
-              if(item.isAdmin && user?.role !== Role_ENUM.ADMIN) return null;
+              if(item.isAdmin && user?.role !== Role_ENUM.ADMIN &&user?.role !== Role_ENUM.SALES  ) return null;
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible

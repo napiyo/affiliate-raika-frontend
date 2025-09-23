@@ -1,6 +1,7 @@
 import KBar from '@/components/kbar';
 import AppSidebar from '@/components/layout/app-sidebar';
 import Header from '@/components/layout/header';
+import ReferralBanner from '@/components/refer-now-banner';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 
@@ -29,7 +30,11 @@ export default async function DashboardLayout({
         <AppSidebar />
         <SidebarInset>
           <Header />
+     
+         
           {/* page main content */}
+        
+        
           {children}
           {/* page main content ends */}
         </SidebarInset>

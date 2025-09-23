@@ -32,7 +32,8 @@ export interface TransactionInterface {
   createdAt: string,
   reference:string,
   txnId:string,
-  user:string
+  user:string,
+  createdBy:string
 }
 
 export const sampleUser: User = {
@@ -59,15 +60,18 @@ export const sampleUser: User = {
   createdAt:new Date().getTime().toString(),
   updatedAt:new Date().getTime().toString(),
 }
-export const USER_ROLE = ['admin','user']
-export type USER_ROLE_TYPE = 'admin' | 'user'
+export const USER_ROLE = ['admin','user','sales','goldUser']
+export type USER_ROLE_TYPE = 'admin' | 'user' | 'sales' |'goldUser';
 
 export const Role_ENUM = Object.freeze({
   ADMIN: 'admin',
   USER: 'user',
+  SALES: 'sales',
+  GOLDUSER:'goldUser'
 });
 
 export const TRANSACTIONS_TYPES = ["CREDIT", "DEBIT", "WITHDRAWAL" , 'LOYALITY_POINT_CREDIT', 'LOYALITY_POINT_DEBIT'];
+export const TRANSACTIONS_TYPES_FOR_SALES = [ "DEBIT", "WITHDRAWAL" , 'LOYALITY_POINT_DEBIT'];
 export type TransactionType = 'CREDIT' | 'DEBIT' | 'WITHDRAWAL' | 'LOYALITY_POINT_CREDIT | LOYALITY_POINT_DEBIT'
 export const TRANSACTIONS_ENUM = Object.freeze({
   CREDIT: 'CREDIT',

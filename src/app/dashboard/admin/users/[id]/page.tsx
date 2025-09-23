@@ -13,10 +13,11 @@ import api from '@/lib/apiService'
 import { useParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { sampleUser, TransactionInterface, TRANSACTIONS_TYPES, TransactionType, User } from '@/types/user'
+import { Role_ENUM, sampleUser, TransactionInterface, TRANSACTIONS_TYPES, TRANSACTIONS_TYPES_FOR_SALES, TransactionType, User } from '@/types/user'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import Link from 'next/link'
+import { useAuthStore } from '@/lib/userStore'
 
 
 interface NewTransaction {
@@ -51,6 +52,9 @@ export default function AdminUserProfile() {
     reference:'',
 
   })
+  const {user:CurrentUser} = useAuthStore();
+
+  const transactionTypesAllowed = user?.role==Role_ENUM.ADMIN?TRANSACTIONS_TYPES:user?.role==Role_ENUM.SALES?TRANSACTIONS_TYPES_FOR_SALES:[]
   const [newTransactionLoading, setNewTransactionLoading] = useState(false);
   const handleAddTransaction = async()=>{
     try{
@@ -161,7 +165,7 @@ export default function AdminUserProfile() {
                 <CardTitle className="text-xl flex flex-row gap-2 items-center">{user.name}  {user.verifiedEmail ? <CheckCircle className='text-green-500 size-5'/> : <MailWarningIcon className='text-red-400 size-5'/>} {user.suspended && <Badge className='bg-red-500 text-white'>Suspended</Badge>}</CardTitle>
                 <CardDescription>User ID: {user._id}</CardDescription>
               </div>
-              <div className="flex gap-2">
+             {CurrentUser?.role == Role_ENUM.ADMIN && <div className="flex gap-2">
                 {!isEditing ? (
                   <Button onClick={handleEdit} variant="outline" size="sm">
                     <Edit className="h-4 w-4 mr-2" />
@@ -179,7 +183,7 @@ export default function AdminUserProfile() {
                     </Button>
                   </div>
                 )}
-              </div>
+              </div>}
             </div>
           </CardHeader>
         </Card>
@@ -374,7 +378,7 @@ export default function AdminUserProfile() {
                 <Select
                   value={newTransaction.type}
                   onValueChange={(value: TransactionType) => 
-                    TRANSACTIONS_TYPES.includes(value) && setNewTransaction(prev => ({ ...prev, type: value }))
+                    transactionTypesAllowed.includes(value) && setNewTransaction(prev => ({ ...prev, type: value }))
                   }
                 >
                   <SelectTrigger>
@@ -382,7 +386,7 @@ export default function AdminUserProfile() {
                   </SelectTrigger>
                   <SelectContent>
                   {
-                     TRANSACTIONS_TYPES.map((val,index)=><SelectItem key={`${val}-${index}`} value={val}>{val}</SelectItem>)
+                     transactionTypesAllowed.map((val,index)=><SelectItem key={`${val}-${index}`} value={val}>{val}</SelectItem>)
                   }
                   </SelectContent>
                 </Select>

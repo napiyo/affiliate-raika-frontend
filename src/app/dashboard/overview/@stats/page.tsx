@@ -62,7 +62,7 @@ export default function Sales() {
             <CardHeader>
               <CardDescription>Conversion Rate</CardDescription>
               <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                {(user?.totalLeads*100/(user?.totalLeadsConv||1)).toFixed(2)}%
+                {(user?.totalLeadsConv*100/(user?.totalLeads||1)).toFixed(2)}%
               </CardTitle>
               <div className='text-sm'>
 

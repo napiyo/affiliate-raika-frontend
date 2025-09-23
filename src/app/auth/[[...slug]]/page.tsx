@@ -87,9 +87,31 @@ export default  function AuthContainer() {
       setError('Password must be at least 8 characters long');
       return;
     }
-    if(phone.length != 10)
+
+    const allowedChars = /^[0-9+\s]+$/;
+    if (!allowedChars.test(phone)) {
+      setError('Invalid mobile number');
+      return;
+    }
+  
+    // Remove spaces
+    let cleaned = phone.replace(/\s+/g, "");
+  
+    // Handle country/leading prefixes
+    if (cleaned.startsWith("+91")) {
+      cleaned = cleaned.slice(3);
+    }
+    else if (cleaned.startsWith("091")) {
+      cleaned = cleaned.slice(3);
+    } else if (cleaned.startsWith("91")) {
+      cleaned = cleaned.slice(2);
+    } else if (cleaned.startsWith("0")) {
+      cleaned = cleaned.slice(1);
+    }
+   
+    if(cleaned.length != 10)
     {
-      setError('Phone number is not valid');
+      setError('Phone number is not valid ');
       return;
     }
 
@@ -148,7 +170,7 @@ export default  function AuthContainer() {
             {currentView === 'login' && (
               <div className="space-y-6">
                 <div className="text-center space-y-2">
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                     Welcome Back
                   </h1>
                   <p className="text-gray-400">Sign in to your account</p>
@@ -212,7 +234,7 @@ export default  function AuthContainer() {
                   <button
                     onClick={handleLogin}
                     disabled={loading}
-                    className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/25"
+                    className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/25"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center gap-2">
@@ -244,7 +266,7 @@ export default  function AuthContainer() {
             {currentView === 'signup' && (
               <div className="space-y-6">
                 <div className="text-center space-y-2">
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                     Create Account
                   </h1>
                   <p className="text-gray-400">Join us today</p>
@@ -322,7 +344,7 @@ export default  function AuthContainer() {
                   <button
                     onClick={handleSignup}
                     disabled={loading}
-                    className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/25"
+                    className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/25"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center gap-2">
@@ -437,7 +459,7 @@ export default  function AuthContainer() {
                   <div className="p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-xl">
                     <div className="flex items-center gap-3 text-yellow-200">
                       <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-sm font-medium">You cannot sign in until your account is verified</span>
+                      <span className="text-sm font-medium">Check your email. verify your email to continue</span>
                     </div>
                   </div>
 
@@ -462,13 +484,13 @@ export default  function AuthContainer() {
       </div>
 
       {/* Demo instructions */}
-      <div className="absolute bottom-4 left-4 right-4 text-center">
+      {/* <div className="absolute bottom-4 left-4 right-4 text-center">
         <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 max-w-md mx-auto">
           <p className="text-gray-400 text-sm">
             <strong>Demo:</strong> Login with test@example.com / password or try signup with any details
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
    
   );

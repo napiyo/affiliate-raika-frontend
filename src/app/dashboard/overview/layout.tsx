@@ -12,6 +12,7 @@ import api from '@/lib/apiService';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
 import WalletChart from '../wallet/@earningOverivew/page';
 import { TopLeadsUsers } from '@/features/overview/components/top-users';
+import ReferralBanner from '@/components/refer-now-banner';
 
 
 export default async function OverViewLayout({
@@ -34,6 +35,7 @@ export default async function OverViewLayout({
   return (
     <PageContainer>
       <div className='flex flex-1 flex-col space-y-2'>
+           <ReferralBanner />
         <div className='flex items-center justify-between space-y-2'>
           <h2 className='text-2xl font-bold tracking-tight'>
             Hi, Welcome back 👋

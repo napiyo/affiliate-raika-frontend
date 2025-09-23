@@ -7,6 +7,7 @@ import { UserNav } from './user-nav';
 import { ThemeSelector } from '../theme-selector';
 import { ModeToggle } from './ThemeToggle/theme-toggle';
 import CtaGithub from './cta-github';
+import ReferralBanner from '../refer-now-banner';
 
 export default function Header() {
   return (
@@ -18,7 +19,7 @@ export default function Header() {
       </div>
 
       <div className='flex items-center gap-2 px-4'>
-        <CtaGithub />
+      
         <div className='hidden md:flex'>
           <SearchInput />
         </div>
@@ -26,6 +27,7 @@ export default function Header() {
         <ModeToggle />
         <ThemeSelector />
       </div>
+      
     </header>
   );
 }

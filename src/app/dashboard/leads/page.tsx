@@ -44,6 +44,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { ProgressIndicator } from '@radix-ui/react-progress';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { flushSync } from 'react-dom';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 // Interfaces
 interface Lead {
@@ -334,17 +335,18 @@ const LeadsPage = () => {
     <div className="container mx-auto p-4 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold">Leads Management</h1>
+        <h1 className="text-3xl font-bold">Referrals Management</h1>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
-              Add Lead
+              Refer Someone
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add New Lead</DialogTitle>
+              <DialogTitle>Refer your friend</DialogTitle>
+              <DialogDescription className='text-sm text-muted-foreground'>Share the details of someone you’d like to refer. Our sales team will get in touch with them, and if they book a shoot with us, you’ll earn a commission."</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
@@ -398,7 +400,7 @@ const LeadsPage = () => {
                 disabled={!leadForm.name || !leadForm.phone || !leadForm.requirements}
                 className="w-full"
               >
-                Add Lead
+                Refer now
               </Button>
             </div>
           </DialogContent>
@@ -408,7 +410,7 @@ const LeadsPage = () => {
 
       <Card>
       <CardHeader>
-        <CardTitle>Leads by Status</CardTitle>
+        <CardTitle>Referrals by Status</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer
@@ -560,7 +562,7 @@ const LeadsPage = () => {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <CardTitle>Leads ({pagination.total})</CardTitle>
+            <CardTitle>Referrals ({pagination.total})</CardTitle>
             <div className="flex items-center gap-2">
               <Label htmlFor="limit" className="text-sm">Show:</Label>
               <Select
