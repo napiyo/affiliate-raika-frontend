@@ -45,6 +45,8 @@ import { ProgressIndicator } from '@radix-ui/react-progress';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { flushSync } from 'react-dom';
 import { DialogDescription } from '@radix-ui/react-dialog';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 // Interfaces
 interface Lead {
@@ -316,7 +318,17 @@ const LeadsPage = () => {
     }
   };
 
-
+ 
+  const router = useRouter();
+  useEffect(() => {
+    if (router.isReady) {
+      if(router.query.openModal === 'true')
+        {
+          setIsModalOpen(true);
+        } // open only if query exists
+    }
+  }, [router.isReady, router.query]);
+  
   useEffect(() => {
     // if(loading) return;
     // if (filters.status !== 'all' || filters.timeRange !== 'all') {

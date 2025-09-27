@@ -63,8 +63,8 @@ async function verifyJwtWithBackend(jwt: string): Promise<User> {
       cookie: `jwt=${jwt}`,
     },
     cache: "no-store",
+    credentials: 'include',
   });
-  
   if (!res.ok) {
     throw new Error("Invalid JWT");
   }
