@@ -85,7 +85,7 @@ export interface Lead {
   id: string;
   name: string;
   // status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
-  status:'New' | 'InProgress' | 'ShootCompleted' | 'Lost';
+  status:'New' | 'InProgress' | 'OrderCompleted' | 'Lost';
   email?: string;
   phone: string;
   requirement: string;

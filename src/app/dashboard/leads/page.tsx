@@ -109,7 +109,7 @@ const LeadsPage = () => {
   const statusConfig = {
     New: { label: 'New', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' },
     InProgress: { label: 'In Progress', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' },
-    ShootCompleted: { label: 'Shoot Completed', color: 'bg-green-100 text-green-800 hover:bg-green-200' },
+    OrderCompleted: { label: 'Order Completed', color: 'bg-green-100 text-green-800 hover:bg-green-200' },
     Lost: { label: 'Lost', color: 'bg-red-100 text-red-800 hover:bg-red-200' },
   };
   
@@ -169,7 +169,7 @@ const LeadsPage = () => {
       // query.page = pagination.page -1;
       // query.limit = pagination.limit;
       if(filters.search && !clearSearch ) query.name = filters.search.trim()
-      if(filters.status!=='all') query.status = filters.status=='ShootCompleted'?"Shoot Completed":filters.status;
+      if(filters.status!=='all') query.status = filters.status=='OrderCompleted'?"Order Completed":filters.status;
         
     
       let chartSource;
@@ -243,7 +243,7 @@ const LeadsPage = () => {
     const colorMap = {
       New: '#3b82f6',
       InProgress: '#eab308',
-      ShootCompleted: '#22c55e',
+      OrderCompleted: '#22c55e',
       Lost: '#ef4444',
     };
     return colorMap[status];
