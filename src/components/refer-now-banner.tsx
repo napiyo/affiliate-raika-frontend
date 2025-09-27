@@ -80,7 +80,7 @@ const ReferralBanner = () => {
 
           {/* Action buttons */}
           <div className="flex items-center space-x-2">
-          <Link href={{ pathname: '/dashboard/leads', query: { openModal: 'true' } }}>
+          <Link href="/leads?refernow=true">
             <button className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-1 animate-button-glow">
               <Plane className="w-4 h-4 animate-propeller" />
               <span>Refer Now</span>

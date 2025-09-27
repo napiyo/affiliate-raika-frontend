@@ -319,15 +319,14 @@ const LeadsPage = () => {
   };
 
  
-  const router = useRouter();
+  const searchParams = useSearchParams();
   useEffect(() => {
-    if (router.isReady) {
-      if(router.query.openModal === 'true')
-        {
-          setIsModalOpen(true);
-        } // open only if query exists
+    const open = searchParams.get('refernow') === 'true';
+    if(open)
+    {
+      setIsModalOpen(open);
     }
-  }, [router.isReady, router.query]);
+  }, [searchParams]);
   
   useEffect(() => {
     // if(loading) return;
