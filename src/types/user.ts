@@ -80,3 +80,15 @@ export const TRANSACTIONS_ENUM = Object.freeze({
   LOYALITY_POINT_CREDIT:'LOYALITY_POINT_CREDIT',
   LOYALITY_POINT_DEBIT:"LOYALITY_POINT_DEBIT"
 });
+
+export interface Lead {
+  id: string;
+  name: string;
+  // status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
+  status:'New' | 'InProgress' | 'ShootCompleted' | 'Lost';
+  email?: string;
+  phone: string;
+  requirement: string;
+  createdOn: Date;
+  source: 'affiliate-link' | 'affiliate-manual';
+}

@@ -47,19 +47,10 @@ import { flushSync } from 'react-dom';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
+import { Lead } from '@/types/user';
 
 // Interfaces
-interface Lead {
-  id: string;
-  name: string;
-  // status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost';
-  status:'New' | 'InProgress' | 'ShootCompleted' | 'Lost';
-  email?: string;
-  phone: string;
-  requirement: string;
-  createdOn: Date;
-  source: 'affiliate-link' | 'affiliate-manual';
-}
+
 
 interface LeadsResponse {
   leads: Lead[];

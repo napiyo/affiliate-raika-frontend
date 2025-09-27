@@ -25,6 +25,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
           
          
       }).catch((error)=>{
+        logout()
           toast.error(error.message);
       });
     }, [isLoggedIn, login, logout]);
