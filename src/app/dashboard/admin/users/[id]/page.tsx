@@ -13,7 +13,7 @@ import api from '@/lib/apiService'
 import { useParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Role_ENUM, sampleUser, TransactionInterface, TRANSACTIONS_TYPES, TRANSACTIONS_TYPES_FOR_SALES, TransactionType, User } from '@/types/user'
+import { Role_ENUM, sampleUser, TransactionInterface, TRANSACTIONS_TYPES, TRANSACTIONS_TYPES_FOR_SALES, TransactionType, User, USER_ROLE, USER_ROLE_TYPE } from '@/types/user'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import Link from 'next/link'
@@ -235,9 +235,10 @@ export default function AdminUserProfile() {
                     <div className="space-y-2">
                       <Label htmlFor="role">Role</Label>
                       {isEditing ? (
-                         <Select onValueChange={(v) => {
-                            if(v !== "admin" && v !== "user") return;
-                           setEditedUser((prev)=>({...prev,role:v}))
+                         <Select onValueChange={(v:USER_ROLE_TYPE) => {
+                            // if(!USER_ROLE.includes(v)) return;
+                         
+                            setEditedUser((prev)=>({...prev,role:v}))
                           }
                           
                           } defaultValue={user.role}>
@@ -245,8 +246,13 @@ export default function AdminUserProfile() {
                            <SelectValue placeholder="Role" />
                          </SelectTrigger>
                          <SelectContent>
-                           <SelectItem value='user'>User</SelectItem>
-                           <SelectItem value='admin'>Admin</SelectItem>
+                           {
+                            USER_ROLE.map(element => {
+                              return <SelectItem value={element}>{element}</SelectItem>
+                            })
+                           }
+                           
+                          
                          </SelectContent>
                        </Select>
                       ) : (
