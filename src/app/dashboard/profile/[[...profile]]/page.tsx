@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Copy, Eye, EyeOff, Share2, Users, TrendingUp } from 'lucide-react';
 import { Icon } from '@/components/icons';
 import { useAuthStore } from '@/lib/userStore';
+import PageContainer from '@/components/layout/page-container';
 
 // Shimmer component for loading states
 const Shimmer = ({ className = "" }) => (
@@ -15,7 +16,7 @@ const Shimmer = ({ className = "" }) => (
 );
 
 const ProfilePage = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   // const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(false);
   
@@ -25,7 +26,7 @@ const ProfilePage = () => {
   if(!user) {
 
 
-    return;
+    return (<div className='flex-1 flex justify-center items-center'>OOPSS failed to your profile</div>);
     
   };
 
@@ -106,7 +107,8 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <PageContainer>
+    <div className="p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="space-y-2">
@@ -118,7 +120,7 @@ const ProfilePage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Profile Information */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 order-2 md:order-1">
             <Card>
               <CardHeader>
                 <CardTitle>Account Information</CardTitle>
@@ -179,7 +181,7 @@ const ProfilePage = () => {
           </div>
 
           {/* Referral Section */}
-          <div>
+          <div className='order-1 md:order-2'>
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -251,6 +253,7 @@ const ProfilePage = () => {
         </div>
       </div>
     </div>
+    </PageContainer>
   );
 };
 

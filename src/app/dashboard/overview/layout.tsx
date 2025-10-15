@@ -55,16 +55,14 @@ export default async function OverViewLayout({
       <div>{bar_stats}</div>
       <div>{sales}</div>
     </div>
-
+</div>
+</div>
     {/* Uncomment for other charts */}
     {/* <div className="col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>{area_stats}</div>
       <div>{pie_stats}</div>
     </div> */}
-  </div>
-
-  <TopLeadsUsers />
-</div>
+  
 
           <TopLeadsUsers/>
       </div>
