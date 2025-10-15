@@ -339,7 +339,7 @@ const LeadsPage = () => {
   }, [pagination.page, pagination.limit,filters.status, filters.timeRange, filters.customEndDate, filters.customEndDate]);
  const [reqChip, setReqChip] = useState<string[]>([]);
 
-  const reqOptions = ["Red", "Blue", "Green", "Yellow", "Purple"];
+  const reqOptions = ["Toddler", "New Born", "Maternity", "Event", "wedding"];
 
   const toggleChip = (option: string) => {
     setReqChip((prev) =>
