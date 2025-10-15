@@ -44,7 +44,7 @@ export function TopLeadsUsers() {
         {loading ? (
           <RecentSalesSkeleton />
         ) : (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-2">
             {users.map((user, index) => (
               <Link key={user._id} href={`/dashboard/admin/users/${user._id}`}>
                 <motion.div

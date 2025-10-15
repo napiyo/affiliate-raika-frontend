@@ -26,6 +26,7 @@ import { useParams, useSearchParams } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import WalletChart from './@earningOverivew/page'
 import InfoTooltip from '@/components/ui/infoTooltip'
+import { AlertDialogContent } from '@/components/ui/alert-dialog'
 
 // Types
 
@@ -317,8 +318,13 @@ const [pagination, setPagination] = useState({
             <AlertTitle>  <Link href={`/dashboard/admin/users/${id}`}> showing result for user : <span className='underline'>{id}</span></Link></AlertTitle>
             </Alert>
     }
+    <Alert >
+           <AlertDescription>{"We do settlement on every friday, still if you want to withdraw your funds, you can reach out to us raikaphotography@gmail.com"}</AlertDescription>
+          
+            </Alert>
 
     <WalletChart id={id}/>
+    
       <Card>
         <CardHeader>
           <CardTitle>Recent Transactions</CardTitle>
