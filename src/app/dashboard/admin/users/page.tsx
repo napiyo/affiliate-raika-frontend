@@ -164,10 +164,10 @@ finally{
           </div>
 
           {/* Users Table */}
-          <div className="overflow-x-auto w-full">
+          <div>
 
          
-          <Table>
+          <Table className="overflow-x-auto w-full">
             <TableHeader>
               <TableRow>
                 <TableHead>Email</TableHead>
