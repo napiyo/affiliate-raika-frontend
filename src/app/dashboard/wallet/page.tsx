@@ -12,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { CalendarIcon, DollarSign, TrendingUp, TrendingDown, Search, Filter, ChevronRight, ChevronLeft, IndianRupee, IndianRupeeIcon, UserIcon, Magnet } from 'lucide-react'
 import PageContainer from '@/components/layout/page-container'
-import { Role_ENUM, sampleUser, TransactionInterface, TRANSACTIONS_TYPES, TransactionType, User, USER_ROLE } from '@/types/user'
+import { Role_ENUM, sampleUser, TransactionInterface, TRANSACTIONS_ENUM, TRANSACTIONS_TYPES, TransactionType, User, USER_ROLE } from '@/types/user'
 import api from '@/lib/apiService'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { endOfWeek, format, startOfWeek, subDays } from 'date-fns'
@@ -442,19 +442,19 @@ const [pagination, setPagination] = useState({
                           {transaction.type}
                         </Badge>
                       </TableCell>
-                      <TableCell className={transaction.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'}>
-                        {transaction.type === 'CREDIT' ? '+' : '-'}{transaction.amount.toFixed(2)} ₹
+                      <TableCell className={(transaction.type === TRANSACTIONS_ENUM.CREDIT || transaction.type === TRANSACTIONS_ENUM.LOYALITY_POINT_CREDIT )  ? 'text-green-600' : 'text-red-600'}>
+                        { (transaction.type === TRANSACTIONS_ENUM.CREDIT || transaction.type === TRANSACTIONS_ENUM.LOYALITY_POINT_CREDIT ) ? '+' : '-'}{transaction.amount.toFixed(2)} ₹
                       </TableCell>
                       <TableCell>
                         
-                          {transaction.reference}
+                          {transaction.reference}                                                                                                                           
                        
                       </TableCell>
                       <TableCell className='max-w-xl  hover:overflow-x-auto not-hover:truncate '>
                        {transaction.comment}
                       </TableCell>
                       <TableCell className="capitalize">
-                     { format(new Date(transaction.createdAt), "dd MMM yyyy")}
+                     { format(new Date(transaction.createdAt), "dd MMM yyyy HH:mm")}
                       </TableCell>
                       {user?.role == Role_ENUM.ADMIN &&
 

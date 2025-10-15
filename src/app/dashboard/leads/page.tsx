@@ -48,6 +48,7 @@ import { DialogDescription } from '@radix-ui/react-dialog';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { Lead } from '@/types/user';
+import { cn } from '@/lib/utils';
 
 // Interfaces
 
@@ -168,7 +169,7 @@ const LeadsPage = () => {
       }
       // query.page = pagination.page -1;
       // query.limit = pagination.limit;
-      if(filters.search && !clearSearch ) query.name = filters.search.trim()
+      if(filters.search && !clearSearch ) query.search = filters.search.trim()
       if(filters.status!=='all') query.status = filters.status=='OrderCompleted'?"Order Completed":filters.status;
         
     
@@ -283,6 +284,9 @@ const LeadsPage = () => {
   // Add lead handler
   const handleAddLead = async () => {
     try {
+      reqChip.map((val,i)=>{
+        leadForm.requirements+=" +"+val;
+      })
       const res = api.post('/leads/add',leadForm);
       toast.promise(res, {
         loading: 'Adding your data...',
@@ -331,7 +335,17 @@ const LeadsPage = () => {
       fetchLeads();
     // }
   }, [pagination.page, pagination.limit,filters.status, filters.timeRange, filters.customEndDate, filters.customEndDate]);
+ const [reqChip, setReqChip] = useState<string[]>([]);
 
+  const reqOptions = ["Red", "Blue", "Green", "Yellow", "Purple"];
+
+  const toggleChip = (option: string) => {
+    setReqChip((prev) =>
+      prev.includes(option)
+        ? prev.filter((item) => item !== option)
+        : [...prev, option]
+    );
+  };
   return (
     <PageContainer >
     <div className="container mx-auto p-4 space-y-6">
@@ -388,6 +402,28 @@ const LeadsPage = () => {
                   placeholder="Enter alternate phone"
                 />
               </div>
+               <div className="flex flex-wrap gap-2">
+      {reqOptions.map((option) => {
+        const isSelected = reqChip.includes(option);
+
+        return (
+          <button
+            key={option}
+            type="button"
+            onClick={() => toggleChip(option)}
+            className={cn(
+              "px-4 py-2 rounded-full border font-medium transition-colors",
+              isSelected
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background text-foreground border-border hover:bg-primary/10"
+            )}
+          >
+            {option}
+          </button>
+        );
+      })}
+    </div>
+    
               <div className="grid gap-2">
                 <Label htmlFor="requirement">Requirement *</Label>
                 <Input
@@ -399,8 +435,8 @@ const LeadsPage = () => {
               </div>
               <Button 
                 onClick={handleAddLead}
-                disabled={!leadForm.name || !leadForm.phone || !leadForm.requirements}
-                className="w-full"
+                disabled={!leadForm.name || !leadForm.phone || (!leadForm.requirements && reqChip.length==0)}
+                className="w-full bg-accent"
               >
                 Refer now
               </Button>
@@ -451,7 +487,7 @@ const LeadsPage = () => {
               <div className="flex gap-2 mt-1">
                 <Input
                   id="search"
-                  placeholder="Search leads..."
+                  placeholder="Search by name, phone, leadId"
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -686,3 +722,4 @@ const LeadsPage = () => {
 };
 
 export default LeadsPage;
+
