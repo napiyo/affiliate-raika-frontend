@@ -209,15 +209,15 @@ const LeadsPage = () => {
             setCache((prev) => ({ ...prev, [page]: {leads:data.data,pagination:{
               page: data.skip/data.limit + 1,
               limit: data.limit,
-              total: data.total_count,
-              totalPages: Math.ceil(data.total_count/data.limit),
+              total: data.totalResults,
+              totalPages: Math.ceil(data.totalResults/data.limit),
             }} }));
           }
           setPagination({
             page: data.skip/data.limit + 1,
             limit: data.limit,
-            total: data.total_count,
-            totalPages: Math.ceil(data.total_count/data.limit),
+            total: data.totalResults,
+            totalPages: Math.ceil(data.totalResults/data.limit),
           });
           chartSource = data.data;
         }
