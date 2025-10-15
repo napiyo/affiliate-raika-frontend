@@ -25,6 +25,7 @@ import Link from 'next/link'
 import { useParams, useSearchParams } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import WalletChart from './@earningOverivew/page'
+import InfoTooltip from '@/components/ui/infoTooltip'
 
 // Types
 
@@ -248,8 +249,12 @@ const [pagination, setPagination] = useState({
           <CardContent>
             <div className="text-2xl font-bold">{walletSummary.balance.toFixed(2)}₹</div>
             <Separator className='my-1'/>
+            <div className='flex justify-between'>
+
             <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
               {walletSummary.points.toFixed(2)} <Badge className='text-xs'>Points</Badge>
+            </div>
+            <InfoTooltip message='Points can not be encashed'/>
             </div>
           </CardContent>
         </Card>

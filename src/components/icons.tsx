@@ -32,7 +32,7 @@ import {
   IconLayoutKanban,
   IconBrandGithub
 } from '@tabler/icons-react';
-import { Magnet, Users } from 'lucide-react';
+import { LucideFileStack, Magnet, Users } from 'lucide-react';
 
 export type Icon = React.ComponentType<IconProps>;
 
@@ -69,5 +69,6 @@ export const Icons = {
   twitter: IconBrandTwitter,
   check: IconCheck,
   magnet: Magnet,
-  users:Users
+  users:Users,
+  LucideFileStack:LucideFileStack
 };

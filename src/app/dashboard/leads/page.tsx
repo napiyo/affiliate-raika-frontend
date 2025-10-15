@@ -286,6 +286,7 @@ const LeadsPage = () => {
   // Add lead handler
   const handleAddLead = async () => {
     try {
+      
       reqChip.map((val,i)=>{
         leadForm.requirements+=" +"+val;
       })

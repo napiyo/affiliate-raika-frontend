@@ -74,6 +74,15 @@ export const navItems: NavItem[] = [
     isActive: false,
     isAdmin:true,
     items: [] // No child items
+  },
+   {
+    title: 'Materials',
+    url: '/dashboard/materials',
+    icon: 'LucideFileStack',
+    shortcut: ['m', 'm'],
+    isActive: false,
+    isAdmin:false,
+    items: [] // No child items
   }
 ];
 

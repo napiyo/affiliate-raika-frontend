@@ -43,16 +43,29 @@ export default async function OverViewLayout({
         </div>
 
        {stats}
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
-         <div className='col-span-8'>{<WalletChart />}</div>
-          <div className='col-span-4'>{bar_stats}</div>
-          <div className='col-span-4 md:col-span-3'>
-            {/* sales arallel routes */}
-            {sales}
-          </div>
-          {/* <div className='col-span-4'>{area_stats}</div>
-          <div className='col-span-4 md:col-span-3'>{pie_stats}</div> */}
-        </div>
+       <div className="space-y-6">
+  <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
+    {/* Full width chart */}
+    <div className="col-span-7">
+      <WalletChart />
+    </div>
+
+    {/* bar_stats + sales row */}
+    <div className="col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>{bar_stats}</div>
+      <div>{sales}</div>
+    </div>
+
+    {/* Uncomment for other charts */}
+    {/* <div className="col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>{area_stats}</div>
+      <div>{pie_stats}</div>
+    </div> */}
+  </div>
+
+  <TopLeadsUsers />
+</div>
+
           <TopLeadsUsers/>
       </div>
     </PageContainer>
