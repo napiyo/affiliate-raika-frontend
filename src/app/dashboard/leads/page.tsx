@@ -47,8 +47,10 @@ import { flushSync } from 'react-dom';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { Lead } from '@/types/user';
+import { Lead, Role_ENUM, USER_ROLE } from '@/types/user';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/lib/userStore';
+import Link from 'next/link';
 
 // Interfaces
 
@@ -322,7 +324,7 @@ const LeadsPage = () => {
       setIsModalOpen(open);
     }
   }, [searchParams]);
-  
+  const {user} = useAuthStore();
   useEffect(() => {
     // if(loading) return;
     // if (filters.status !== 'all' || filters.timeRange !== 'all') {
@@ -652,7 +654,10 @@ const LeadsPage = () => {
                       <TableHead className="hidden lg:table-cell">Requirement</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="hidden sm:table-cell">Created</TableHead>
-                    </TableRow>
+                      {
+                       (user?.role == Role_ENUM.ADMIN || user?.role == Role_ENUM.SALES) && <TableHead className="hidden sm:table-cell">Created By</TableHead>
+                      }
+                        </TableRow>
                   </TableHeader>
                   <TableBody>
                     {leads.map((lead) => (
@@ -669,8 +674,11 @@ const LeadsPage = () => {
                           </Badge>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell">
-                          {format(new Date(lead.createdOn), 'MMM dd, yyyy')}
+                          {format(new Date(lead.createdOn), 'MMM dd, yyyy HH:mm')}
                         </TableCell>
+                       {(user?.role == Role_ENUM.ADMIN || user?.role == Role_ENUM.SALES) 
+                       && <TableCell><Link href={'/dashboard/admin/users/'+lead.user}><Button>{lead.user}</Button></Link></TableCell>
+                        }
                       </TableRow>
                     ))}
                   </TableBody>

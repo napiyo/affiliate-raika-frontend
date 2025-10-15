@@ -90,5 +90,6 @@ export interface Lead {
   phone: string;
   requirement: string;
   createdOn: Date;
+  user?:string,
   source: 'affiliate-link' | 'affiliate-manual';
 }
