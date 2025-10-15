@@ -677,7 +677,7 @@ const LeadsPage = () => {
                           {format(new Date(lead.createdOn), 'MMM dd, yyyy HH:mm')}
                         </TableCell>
                        {(user?.role == Role_ENUM.ADMIN || user?.role == Role_ENUM.SALES) 
-                       && <TableCell><Link href={'/dashboard/admin/users/'+lead.user}><Button>{lead.user}</Button></Link></TableCell>
+                       && <TableCell><Link href={'/dashboard/admin/users/'+lead.user}><Button>Profile</Button></Link></TableCell>
                         }
                       </TableRow>
                     ))}

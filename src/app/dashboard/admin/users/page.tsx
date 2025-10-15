@@ -105,7 +105,7 @@ finally{
   return (
     <PageContainer>
     <div className='flex-1'>
-      <Card className="flex-1 overflow-x-scroll">
+      <Card className="flex-1">
         <CardHeader>
           <CardTitle>Manage Users</CardTitle>
         </CardHeader>
@@ -151,6 +151,8 @@ finally{
               <SelectContent>
                 <SelectItem value="default">Default</SelectItem>
                 <SelectItem value="balance">Balance</SelectItem>
+                <SelectItem value="points">Points</SelectItem>
+                <SelectItem value="lifetimePointsEarnings">Points Earned</SelectItem>
                 <SelectItem value="lifetimeEarnings">Earnings</SelectItem>
                 <SelectItem value="lifetimeWithdrawn">Payout</SelectItem>
                 <SelectItem value="totalLeads">total leads</SelectItem>
@@ -162,6 +164,9 @@ finally{
           </div>
 
           {/* Users Table */}
+          <div className="overflow-x-auto w-full">
+
+         
           <Table>
             <TableHeader>
               <TableRow>
@@ -214,7 +219,7 @@ finally{
               ))}
             </TableBody>
           </Table>
-
+        </div>
          {/* Pagination */}
          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4">
          <div className="flex items-center gap-2">
