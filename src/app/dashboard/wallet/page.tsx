@@ -783,7 +783,7 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                   </div>
                 </div>
 
-                {user?.role === 'ADMIN' && (
+                {user?.role === Role_ENUM.ADMIN && (
                   <>
                     <div>
                       <div className="text-muted-foreground text-xs uppercase tracking-wide">

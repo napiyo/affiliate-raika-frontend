@@ -109,10 +109,10 @@ finally{
         <CardHeader>
           <CardTitle>Manage Users</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 max-w-full">
           {/* Filters */}
-          <div className="flex  gap-3 flex-row flex-wrap">
-            <div className="flex flex-1 flex-row items-center gap-3 flex-wrap">
+          <div className="flex  gap-3   max-w-full flex-row flex-wrap">
+            <div className="flex flex-1 max-w-full flex-row items-center gap-3 flex-wrap">
 
             <Input
               placeholder="Search user"
