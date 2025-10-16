@@ -457,8 +457,8 @@ const LeadsPage = () => {
       </CardHeader>
   <CardContent>
          <div className="w-full overflow-x-auto">
-    <div className="min-w-[320px] sm:min-w-0">
-        <ChartContainer
+   
+        {/* <ChartContainer
           config={{
             count: {
               label: "Leads",
@@ -479,9 +479,9 @@ const LeadsPage = () => {
             <ChartTooltip content={<ChartTooltipContent />} />
             <Bar dataKey="count" fill="var(--color-count)" radius={6}  maxBarSize={35} />
           </BarChart>
-        </ChartContainer>
+        </ChartContainer> */}
         </div>
-        </div>
+      
       </CardContent>
     </Card>
 
@@ -491,7 +491,7 @@ const LeadsPage = () => {
          <div className="flex flex-col sm:flex-row justify-between gap-4">
             {/* Search */}
            
-            <div className="md:col-span-1 w-xl">
+            <div className="md:col-span-1 w-full">
               <Label htmlFor="search">Search</Label>
               <div className="flex gap-2 mt-1">
                 <Input

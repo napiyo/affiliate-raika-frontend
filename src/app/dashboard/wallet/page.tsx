@@ -461,7 +461,7 @@ const [pagination, setPagination] = useState({
                           {transaction.reference}                                                                                                                           
                        
                       </TableCell>
-                      <TableCell className='max-w-xl  hover:overflow-x-auto not-hover:truncate '>
+                      <TableCell className='hover:overflow-x-auto not-hover:truncate '>
                        {transaction.comment}
                       </TableCell>
                       <TableCell className="capitalize">
