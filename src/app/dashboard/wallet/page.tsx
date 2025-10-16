@@ -679,54 +679,58 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
   };
 
   return (
-    <>
-      <div className="flex flex-col gap-4 max-w-full sm:hidden">
+   <>
+      {/* Card list */}
+      <div className="flex flex-col gap-3">
         {transactions.map((txn) => (
           <Card
             key={txn.txnId}
-            className="p-4 flex justify-start items-center cursor-pointer shadow hover:shadow-md"
+            className="p-4 flex flex-col cursor-pointer shadow-sm hover:shadow-md transition-all"
             onClick={() => handleCardClick(txn)}
           >
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{txn.type}</span>
+            <div className="text-lg font-bold tracking-tight">
               <span
-                className={`font-bold text-lg ${
+                className={
                   txn.type === 'CREDIT' || txn.type === 'LOYALITY_POINT_CREDIT'
                     ? 'text-green-600'
                     : 'text-red-600'
-                }`}
+                }
               >
                 {(txn.type === 'CREDIT' || txn.type === 'LOYALITY_POINT_CREDIT' ? '+' : '-') +
                   txn.amount.toFixed(2)}{' '}
                 ₹
               </span>
             </div>
-    
+            <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wide">
+              {txn.type}
+            </div>
           </Card>
         ))}
       </div>
 
       {/* Bottom Sheet */}
       <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-        <SheetContent>
+        <SheetContent className="p-6 space-y-4">
           {selectedTxn && (
             <>
               <SheetHeader>
-                <SheetTitle>Transaction Details</SheetTitle>
-                <SheetDescription>
-                  Details for transaction {selectedTxn.txnId}
-                </SheetDescription>
+                <SheetTitle className="text-lg font-semibold">
+                  Transaction Details
+                </SheetTitle>
               </SheetHeader>
 
-              <div className="flex flex-col gap-2 mt-4 px-2">
-                <div className='flex flex-col gap-1'>
-                  <div className="font-medium">Transaction Id: </div>
-                  <div>
-                  {selectedTxn.txnId}
+              <div className="space-y-5 text-sm">
+                <div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                    Transaction ID
                   </div>
+                  <div className="font-medium">{selectedTxn.txnId}</div>
                 </div>
-               <div className='flex flex-col gap-1'>
-                  <div className="font-medium">Type: </div>
+
+                <div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                    Type
+                  </div>
                   <Badge
                     variant={
                       selectedTxn.type === 'CREDIT' ? 'default' : 'secondary'
@@ -735,52 +739,73 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                     {selectedTxn.type}
                   </Badge>
                 </div>
-               <div className='flex flex-col gap-1'>
-                  <div className="font-medium">Amount: </div>
-                 <div>
 
-                  {(selectedTxn.type === 'CREDIT' || selectedTxn.type === 'LOYALITY_POINT_CREDIT'
-                    ? '+'
-                    : '-') + selectedTxn.amount.toFixed(2)}{' '}
-                  ₹
-                    </div>
-                </div>
-                <div className='flex flex-col gap-1'>
-                  <div className="font-medium">Reference: </div>
-                  <div>
-                    {selectedTxn.reference}
-                    </div>
-                </div>
-               <div className='flex flex-col gap-1'>
-                  <div className="font-medium">Comment: </div>
                 <div>
-                    {selectedTxn.comment}
+                  <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                    Amount
+                  </div>
+                  <div
+                    className={`font-semibold text-base ${
+                      selectedTxn.type === 'CREDIT' ||
+                      selectedTxn.type === 'LOYALITY_POINT_CREDIT'
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}
+                  >
+                    {(selectedTxn.type === 'CREDIT' ||
+                    selectedTxn.type === 'LOYALITY_POINT_CREDIT'
+                      ? '+'
+                      : '-') + selectedTxn.amount.toFixed(2)}{' '}
+                    ₹
                   </div>
                 </div>
-               <div className='flex flex-col gap-1'>
-                  <div className="font-medium">Date: </div>
+
+                <div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                    Reference
+                  </div>
+                  <div>{selectedTxn.reference || '-'}</div>
+                </div>
+
+                <div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                    Comment
+                  </div>
+                  <div className="break-words">{selectedTxn.comment || '-'}</div>
+                </div>
+
+                <div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                    Date
+                  </div>
                   <div>
                     {format(new Date(selectedTxn.createdAt), 'dd MMM yyyy HH:mm')}
-                    </div>
+                  </div>
                 </div>
+
                 {user?.role === 'ADMIN' && (
                   <>
-                   <div className='flex flex-col gap-1'>
-                      <span className="font-medium">User: </span>
+                    <div>
+                      <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                        User
+                      </div>
                       <Link
                         href={`admin/users/${selectedTxn.user}`}
-                        className="bg-primary text-primary-foreground px-3 py-1 rounded-2xl"
+                        className="text-primary font-medium hover:underline"
                       >
-                        User
+                        View User
                       </Link>
                     </div>
-                   <div className='flex flex-col gap-1'>
-                      <span className="font-medium">Created By: </span>
+
+                    <div>
+                      <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                        Created By
+                      </div>
                       <Link
                         href={`admin/users/${selectedTxn.createdBy}`}
-                        className="bg-primary text-primary-foreground px-3 py-1 rounded-2xl"
+                        className="text-primary font-medium hover:underline"
                       >
-                        Created By
+                        View Creator
                       </Link>
                     </div>
                   </>
