@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip';
+import { usePathname } from 'next/navigation';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -111,7 +112,14 @@ function SidebarProvider({
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? 'expanded' : 'collapsed';
+const pathname = usePathname();
 
+// Auto-close mobile sidebar on navigation
+React.useEffect(() => {
+  if (isMobile && openMobile) {
+    setOpenMobile(false);
+  }
+}, [pathname]);
   const contextValue = React.useMemo<SidebarContextProps>(
     () => ({
       state,

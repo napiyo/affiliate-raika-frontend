@@ -352,7 +352,7 @@ const LeadsPage = () => {
   };
   return (
     <PageContainer >
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+      <div className="flex flex-1 p-4 flex-col gap-4">
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

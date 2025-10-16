@@ -89,7 +89,7 @@ export default function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className='overflow-x-hidden'>
         <SidebarGroup>
-          <SidebarGroupLabel>Overview</SidebarGroupLabel>
+          {/* <SidebarGroupLabel>Overview</SidebarGroupLabel> */}
           <SidebarMenu>
             {navItems.map((item) => {
               if(item.isAdmin && user?.role !== Role_ENUM.ADMIN &&user?.role !== Role_ENUM.SALES  ) return null;
