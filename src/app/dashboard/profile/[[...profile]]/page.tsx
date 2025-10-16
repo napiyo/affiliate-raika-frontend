@@ -23,12 +23,7 @@ const ProfilePage = () => {
   const {user} = useAuthStore();
   // console.log(user);
   
-  if(!user) {
 
-
-    return (<div className='flex-1 flex justify-center items-center'>OOPSS failed to your profile</div>);
-    
-  };
 
 
   const referralLink = `${process.env.NEXT_PUBLIC_REFERRAL_BASE_URL}/${user?.referralToken}`
@@ -55,9 +50,10 @@ const ProfilePage = () => {
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background p-4">
+    if(!user) {
+
+
+    return (  <div className="min-h-screen bg-background p-4">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header Shimmer */}
           <div className="space-y-2">
@@ -102,13 +98,12 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
+      </div>);
+    
+  };
   return (
     <PageContainer>
-    <div className="p-4">
+    <div className="p-4 flex items-center">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="space-y-2">

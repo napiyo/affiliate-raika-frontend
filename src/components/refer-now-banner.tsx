@@ -68,12 +68,17 @@ const ReferralBanner = () => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0 ">
+            <div className="flex-1 min-w-0 hidden md:block ">
               <p className="text-sm sm:text-base font-semibold text-accent-foreground">
                 Refer Now, and Earn Commission! ✈️
               </p>
-              <p className="text-xs hidden md:block sm:text-sm text-accent-foreground mt-0.5">
+              <p className="text-xs sm:text-sm text-accent-foreground mt-0.5">
                 Refer someone and our sales team will get in touch with them and get commsion for every successful referral
+              </p>
+            </div>
+            <div className="flex-1 min-w-0 md:hidden ">
+              <p className="text-sm sm:text-base font-semibold text-accent-foreground">
+                Earn Commission! ✈️
               </p>
             </div>
           </div>

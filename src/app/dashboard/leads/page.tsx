@@ -47,10 +47,11 @@ import { flushSync } from 'react-dom';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { Lead, Role_ENUM, USER_ROLE } from '@/types/user';
+import { Lead, Role_ENUM, User, USER_ROLE } from '@/types/user';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/lib/userStore';
 import Link from 'next/link';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 // Interfaces
 
@@ -645,7 +646,10 @@ const LeadsPage = () => {
                   
           ) : (
             <>
-              <div className="overflow-x-auto">
+            {/* Mobile list */}
+            <MobileList leads={leads} statusConfig={statusConfig} user={user}/>
+            {/* desktop table */}
+              <div className="overflow-x-auto hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -729,6 +733,82 @@ const LeadsPage = () => {
     </PageContainer>
   );
 };
-
+function MobileList({leads,statusConfig,user}:{leads:Lead[],statusConfig:any,user?:User|null})
+{
+  return(<div className="flex flex-col gap-3 md:hidden">
+        {leads.map((lead) => (
+          <Sheet key={lead.id}>
+            <SheetTrigger asChild>
+              <div className="border rounded-xl p-4 shadow-sm flex justify-between items-center cursor-pointer hover:bg-muted/30 transition">
+                <div>
+                  <p className="font-semibold text-base">{lead.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {statusConfig[lead.status].label}
+                  </p>
+                </div>
+                <Badge className={statusConfig[lead.status].color}>
+                  {statusConfig[lead.status].label}
+                </Badge>
+              </div>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle>{lead.name}</SheetTitle>
+                <SheetDescription>
+                  Detailed referral information
+                </SheetDescription>
+              </SheetHeader>
+              <div className="mt-4 space-y-3 text-sm">
+                <div>
+                  <Label className="text-muted-foreground">Phone</Label>
+                  <div>{lead.phone}</div>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Email</Label>
+                  <div>{lead.email || "-"}</div>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Requirement</Label>
+                  <div>{lead.requirement}</div>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Status</Label>
+                  <div>
+                    <Badge className={statusConfig[lead.status].color}>
+                      {statusConfig[lead.status].label}
+                    </Badge>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Created</Label>
+                  <div>
+                    {format(new Date(lead.createdOn), "MMM dd, yyyy HH:mm")}
+                  </div>
+                </div>
+                {(user?.role == Role_ENUM.ADMIN ||
+                  user?.role == Role_ENUM.SALES) && (
+                  <div>
+                    <Label className="text-muted-foreground">Created By</Label>
+                    <div>
+                      <Link href={"/dashboard/admin/users/" + lead.user}>
+                        <Button size="sm" variant="secondary">
+                          View Profile
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        ))}
+        {leads.length === 0 && (
+          <Label className="text-center mt-4 text-muted-foreground">
+            No Data - try to remove filters
+          </Label>
+        )}
+      </div>
+    )
+}
 export default LeadsPage;
 
