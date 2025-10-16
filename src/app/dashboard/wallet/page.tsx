@@ -685,7 +685,7 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
         {transactions.map((txn) => (
           <Card
             key={txn.txnId}
-            className="p-4 flex flex-col cursor-pointer shadow-sm hover:shadow-md transition-all"
+            className="p-4 flex flex-col cursor-pointer shadow-sm hover:shadow-md transition-all gap-1"
             onClick={() => handleCardClick(txn)}
           >
             <div className="text-lg font-bold tracking-tight">
