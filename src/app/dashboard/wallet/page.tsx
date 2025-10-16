@@ -27,6 +27,7 @@ import { Separator } from '@/components/ui/separator'
 import WalletChart from './@earningOverivew/page'
 import InfoTooltip from '@/components/ui/infoTooltip'
 import { AlertDialogContent } from '@/components/ui/alert-dialog'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 // Types
 
@@ -322,8 +323,10 @@ const [pagination, setPagination] = useState({
            <AlertDescription>{"We do settlement on every friday, still if you want to withdraw your funds, you can reach out to us raikaphotography@gmail.com"}</AlertDescription>
           
             </Alert>
+<div className='w-full max-w-full'>
 
     <WalletChart id={id}/>
+</div>
     
       <Card>
         <CardHeader>
@@ -429,7 +432,7 @@ const [pagination, setPagination] = useState({
             <TransactionsTableSkeleton />
           ) : transactions?.length > 0 ? (
             <>
-              <Table>
+              <Table className='hidden sm:block'>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Transaction Id</TableHead>
@@ -487,6 +490,7 @@ const [pagination, setPagination] = useState({
                   ))}
                 </TableBody>
               </Table>
+              <TransactionCards transactions={transactions} user={user} />
 
               {/* Pagination */}
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4">
@@ -657,4 +661,126 @@ function TransactionsTableSkeleton() {
       ))}
     </div>
   )
+}
+
+
+type TransactionCardProps = {
+  transactions: any[];
+  user: any;
+};
+
+export function TransactionCards({ transactions, user }: TransactionCardProps) {
+  const [selectedTxn, setSelectedTxn] = React.useState<any>(null);
+  const [openSheet, setOpenSheet] = React.useState(false);
+
+  const handleCardClick = (txn: any) => {
+    setSelectedTxn(txn);
+    setOpenSheet(true);
+  };
+
+  return (
+    <>
+      <div className="flex flex-col gap-4 max-w-full sm:hidden">
+        {transactions.map((txn) => (
+          <Card
+            key={txn.txnId}
+            className="p-4 flex justify-between items-center cursor-pointer shadow hover:shadow-md"
+            onClick={() => handleCardClick(txn)}
+          >
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">{txn.type}</span>
+              <span
+                className={`font-bold text-lg ${
+                  txn.type === 'CREDIT' || txn.type === 'LOYALITY_POINT_CREDIT'
+                    ? 'text-green-600'
+                    : 'text-red-600'
+                }`}
+              >
+                {(txn.type === 'CREDIT' || txn.type === 'LOYALITY_POINT_CREDIT' ? '+' : '-') +
+                  txn.amount.toFixed(2)}{' '}
+                ₹
+              </span>
+            </div>
+            <Button variant="ghost" size="icon">
+              &gt;
+            </Button>
+          </Card>
+        ))}
+      </div>
+
+      {/* Bottom Sheet */}
+      <Sheet open={openSheet} onOpenChange={setOpenSheet}>
+        <SheetContent>
+          {selectedTxn && (
+            <>
+              <SheetHeader>
+                <SheetTitle>Transaction Details</SheetTitle>
+                <SheetDescription>
+                  Details for transaction {selectedTxn.txnId}
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="flex flex-col gap-2 mt-4">
+                <div>
+                  <span className="font-medium">Transaction Id: </span>
+                  {selectedTxn.txnId}
+                </div>
+                <div>
+                  <span className="font-medium">Type: </span>
+                  <Badge
+                    variant={
+                      selectedTxn.type === 'CREDIT' ? 'default' : 'secondary'
+                    }
+                  >
+                    {selectedTxn.type}
+                  </Badge>
+                </div>
+                <div>
+                  <span className="font-medium">Amount: </span>
+                  {(selectedTxn.type === 'CREDIT' || selectedTxn.type === 'LOYALITY_POINT_CREDIT'
+                    ? '+'
+                    : '-') + selectedTxn.amount.toFixed(2)}{' '}
+                  ₹
+                </div>
+                <div>
+                  <span className="font-medium">Reference: </span>
+                  {selectedTxn.reference}
+                </div>
+                <div>
+                  <span className="font-medium">Comment: </span>
+                  {selectedTxn.comment}
+                </div>
+                <div>
+                  <span className="font-medium">Date: </span>
+                  {format(new Date(selectedTxn.createdAt), 'dd MMM yyyy HH:mm')}
+                </div>
+                {user?.role === 'ADMIN' && (
+                  <>
+                    <div>
+                      <span className="font-medium">User: </span>
+                      <Link
+                        href={`admin/users/${selectedTxn.user}`}
+                        className="bg-primary text-primary-foreground px-3 py-1 rounded-2xl"
+                      >
+                        User
+                      </Link>
+                    </div>
+                    <div>
+                      <span className="font-medium">Created By: </span>
+                      <Link
+                        href={`admin/users/${selectedTxn.createdBy}`}
+                        className="bg-primary text-primary-foreground px-3 py-1 rounded-2xl"
+                      >
+                        Created By
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+    </>
+  );
 }
