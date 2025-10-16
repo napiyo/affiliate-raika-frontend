@@ -105,14 +105,14 @@ finally{
   return (
     <PageContainer>
     <div className='flex-1 flex w-full max-w-full'>
-      <Card className="flex-1 flex">
+      <Card className="flex-1 flex max-w-full">
         <CardHeader>
           <CardTitle>Manage Users</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Filters */}
-          <div className="flex  gap-3 flex-row">
-            <div className="flex flex-1 flex-row items-center gap-3">
+          <div className="flex  gap-3 flex-row flex-wrap">
+            <div className="flex flex-1 flex-row items-center gap-3 flex-wrap">
 
             <Input
               placeholder="Search user"
@@ -167,7 +167,7 @@ finally{
           <div>
 
          
-          <Table className="overflow-x-auto w-full">
+          <Table className=" w-full max-w-full overflow-x-auto">
             <TableHeader>
               <TableRow>
                 <TableHead>Email</TableHead>

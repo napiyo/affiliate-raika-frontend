@@ -229,7 +229,7 @@ const [pagination, setPagination] = useState({
 
   return (
     <PageContainer>
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -334,7 +334,7 @@ const [pagination, setPagination] = useState({
           <CardDescription>View and filter your transaction history</CardDescription>
           
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-4 items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 max-w-full items-center justify-between">
             <div className="relative flex-1/3 flex flex-row gap-4 items-center ">
               <Search className="absolute left-3  h-4 w-4 text-muted-foreground" />
               <Input
@@ -349,7 +349,7 @@ const [pagination, setPagination] = useState({
                      }
                     </Button>
             </div>
-            <div className='flex flex-row gap-4 items-center justify-end'>
+            <div className='flex flex-row gap-4 items-center justify-end flex-wrap'>
                 
             
             <Select value={filters.type} onValueChange={(value:'all'| TransactionType) => setFilters((prev)=>({...prev,type:value}))}>
@@ -684,7 +684,7 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
         {transactions.map((txn) => (
           <Card
             key={txn.txnId}
-            className="p-4 flex justify-between items-center cursor-pointer shadow hover:shadow-md"
+            className="p-4 flex justify-start items-center cursor-pointer shadow hover:shadow-md"
             onClick={() => handleCardClick(txn)}
           >
             <div className="flex flex-col">
@@ -701,9 +701,7 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                 ₹
               </span>
             </div>
-            <Button variant="ghost" size="icon">
-              &gt;
-            </Button>
+    
           </Card>
         ))}
       </div>
@@ -720,13 +718,15 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                 </SheetDescription>
               </SheetHeader>
 
-              <div className="flex flex-col gap-2 mt-4">
-                <div>
-                  <span className="font-medium">Transaction Id: </span>
+              <div className="flex flex-col gap-2 mt-4 px-2">
+                <div className='flex flex-col gap-1'>
+                  <div className="font-medium">Transaction Id: </div>
+                  <div>
                   {selectedTxn.txnId}
+                  </div>
                 </div>
-                <div>
-                  <span className="font-medium">Type: </span>
+               <div className='flex flex-col gap-1'>
+                  <div className="font-medium">Type: </div>
                   <Badge
                     variant={
                       selectedTxn.type === 'CREDIT' ? 'default' : 'secondary'
@@ -735,28 +735,37 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                     {selectedTxn.type}
                   </Badge>
                 </div>
-                <div>
-                  <span className="font-medium">Amount: </span>
+               <div className='flex flex-col gap-1'>
+                  <div className="font-medium">Amount: </div>
+                 <div>
+
                   {(selectedTxn.type === 'CREDIT' || selectedTxn.type === 'LOYALITY_POINT_CREDIT'
                     ? '+'
                     : '-') + selectedTxn.amount.toFixed(2)}{' '}
                   ₹
+                    </div>
                 </div>
-                <div>
-                  <span className="font-medium">Reference: </span>
-                  {selectedTxn.reference}
+                <div className='flex flex-col gap-1'>
+                  <div className="font-medium">Reference: </div>
+                  <div>
+                    {selectedTxn.reference}
+                    </div>
                 </div>
+               <div className='flex flex-col gap-1'>
+                  <div className="font-medium">Comment: </div>
                 <div>
-                  <span className="font-medium">Comment: </span>
-                  {selectedTxn.comment}
+                    {selectedTxn.comment}
+                  </div>
                 </div>
-                <div>
-                  <span className="font-medium">Date: </span>
-                  {format(new Date(selectedTxn.createdAt), 'dd MMM yyyy HH:mm')}
+               <div className='flex flex-col gap-1'>
+                  <div className="font-medium">Date: </div>
+                  <div>
+                    {format(new Date(selectedTxn.createdAt), 'dd MMM yyyy HH:mm')}
+                    </div>
                 </div>
                 {user?.role === 'ADMIN' && (
                   <>
-                    <div>
+                   <div className='flex flex-col gap-1'>
                       <span className="font-medium">User: </span>
                       <Link
                         href={`admin/users/${selectedTxn.user}`}
@@ -765,7 +774,7 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                         User
                       </Link>
                     </div>
-                    <div>
+                   <div className='flex flex-col gap-1'>
                       <span className="font-medium">Created By: </span>
                       <Link
                         href={`admin/users/${selectedTxn.createdBy}`}
