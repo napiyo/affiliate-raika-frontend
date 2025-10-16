@@ -104,8 +104,8 @@ finally{
 
   return (
     <PageContainer>
-    <div className='flex-1'>
-      <Card className="flex-1">
+    <div className='flex-1 flex w-full max-w-full'>
+      <Card className="flex-1 flex">
         <CardHeader>
           <CardTitle>Manage Users</CardTitle>
         </CardHeader>
