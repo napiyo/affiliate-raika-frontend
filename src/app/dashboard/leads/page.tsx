@@ -352,7 +352,8 @@ const LeadsPage = () => {
   };
   return (
     <PageContainer >
-    <div className="container mx-auto p-4 space-y-6">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold">Referrals Management</h1>
@@ -363,7 +364,7 @@ const LeadsPage = () => {
               Refer Someone
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Refer your friend</DialogTitle>
               <DialogDescription className='text-sm text-muted-foreground'>Share the details of someone you’d like to refer. Our sales team will get in touch with them, and if they book a shoot with us, you’ll earn a commission."</DialogDescription>
@@ -454,7 +455,9 @@ const LeadsPage = () => {
       <CardHeader>
         <CardTitle>Referrals by Status</CardTitle>
       </CardHeader>
-      <CardContent>
+  <CardContent>
+         <div className="w-full overflow-x-auto">
+    <div className="min-w-[320px] sm:min-w-0">
         <ChartContainer
           config={{
             count: {
@@ -477,13 +480,15 @@ const LeadsPage = () => {
             <Bar dataKey="count" fill="var(--color-count)" radius={6}  maxBarSize={35} />
           </BarChart>
         </ChartContainer>
+        </div>
+        </div>
       </CardContent>
     </Card>
 
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-row justify-between">
+         <div className="flex flex-col sm:flex-row justify-between gap-4">
             {/* Search */}
            
             <div className="md:col-span-1 w-xl">
