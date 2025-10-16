@@ -352,7 +352,7 @@ const LeadsPage = () => {
   };
   return (
     <PageContainer >
-      <div className="flex flex-1 p-4 flex-col gap-4">
+      <div className="flex  max-w-full flex-1 flex-col gap-4">
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -451,39 +451,7 @@ const LeadsPage = () => {
       </div>
 
 
-      <Card>
-      <CardHeader>
-        <CardTitle>Referrals by Status</CardTitle>
-      </CardHeader>
-  <CardContent>
-         <div className="w-full overflow-x-auto">
-   
-        {/* <ChartContainer
-          config={{
-            count: {
-              label: "Leads",
-              color: "hsl(var(--chart-1))",
-            },
-          }}
-          className="h-64 w-full"
-        >
-          <BarChart data={chartData}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="status"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-            />
-            <YAxis tickLine={false} axisLine={false} />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="count" fill="var(--color-count)" radius={6}  maxBarSize={35} />
-          </BarChart>
-        </ChartContainer> */}
-        </div>
-      
-      </CardContent>
-    </Card>
+    <LeadChart chartData={chartData}/>
 
       {/* Filters */}
       <Card>
@@ -814,6 +782,43 @@ function MobileList({leads,statusConfig,user}:{leads:Lead[],statusConfig:any,use
         )}
       </div>
     )
+}
+
+function LeadChart({chartData}:{chartData:any})
+{
+  return(   <Card className='@container/card'>
+      <CardHeader>
+        <CardTitle>Referrals by Status</CardTitle>
+      </CardHeader>
+  <CardContent>
+         <div className="w-full max-w-full overflow-x-auto">
+   
+        <ChartContainer
+          config={{
+            count: {
+              label: "Leads",
+              color: "hsl(var(--chart-1))",
+            },
+          }}
+          className="h-64 w-full"
+        >
+          <BarChart data={chartData}>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <XAxis
+              dataKey="status"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
+            <YAxis tickLine={false} axisLine={false} />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Bar dataKey="count" fill="var(--color-count)" radius={6}  maxBarSize={35} />
+          </BarChart>
+        </ChartContainer>
+        </div>
+      
+      </CardContent>
+    </Card>)
 }
 export default LeadsPage;
 

@@ -331,7 +331,7 @@ const [pagination, setPagination] = useState({
           <CardDescription>View and filter your transaction history</CardDescription>
           
           {/* Filters */}
-          <div className="flex flex-row sm:flex-row gap-4 mt-4 items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 items-center justify-between">
             <div className="relative flex-1/3 flex flex-row gap-4 items-center ">
               <Search className="absolute left-3  h-4 w-4 text-muted-foreground" />
               <Input
