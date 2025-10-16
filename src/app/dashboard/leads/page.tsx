@@ -488,7 +488,7 @@ const LeadsPage = () => {
             </div>
 
             {/* Status Filter */}
-            <div className='flex flex-row gap-4'>
+            <div className='flex flex-row gap-4 max-w-full flex-wrap'>
             <div>
               <Label>Status</Label>
               <Select value={filters.status} onValueChange={handleStatusFilter}>
@@ -731,20 +731,20 @@ function MobileList({leads,statusConfig,user}:{leads:Lead[],statusConfig:any,use
                   Detailed referral information
                 </SheetDescription>
               </SheetHeader>
-              <div className="mt-4 space-y-3 text-sm">
-                <div>
+              <div className="mt-4 space-y-3 text-sm flex flex-col p-4 gap-2">
+                <div className='flex flex-col gap-1'>
                   <Label className="text-muted-foreground">Phone</Label>
                   <div>{lead.phone}</div>
                 </div>
-                <div>
+                <div className='flex flex-col gap-1'>
                   <Label className="text-muted-foreground">Email</Label>
                   <div>{lead.email || "-"}</div>
                 </div>
-                <div>
+                  <div className='flex flex-col gap-1'>
                   <Label className="text-muted-foreground">Requirement</Label>
                   <div>{lead.requirement}</div>
                 </div>
-                <div>
+                  <div className='flex flex-col gap-1'>
                   <Label className="text-muted-foreground">Status</Label>
                   <div>
                     <Badge className={statusConfig[lead.status].color}>
@@ -752,7 +752,7 @@ function MobileList({leads,statusConfig,user}:{leads:Lead[],statusConfig:any,use
                     </Badge>
                   </div>
                 </div>
-                <div>
+                  <div className='flex flex-col gap-1'>
                   <Label className="text-muted-foreground">Created</Label>
                   <div>
                     {format(new Date(lead.createdOn), "MMM dd, yyyy HH:mm")}
@@ -760,7 +760,7 @@ function MobileList({leads,statusConfig,user}:{leads:Lead[],statusConfig:any,use
                 </div>
                 {(user?.role == Role_ENUM.ADMIN ||
                   user?.role == Role_ENUM.SALES) && (
-                  <div>
+                   <div className='flex flex-col gap-1'>
                     <Label className="text-muted-foreground">Created By</Label>
                     <div>
                       <Link href={"/dashboard/admin/users/" + lead.user}>
@@ -802,18 +802,21 @@ function LeadChart({chartData}:{chartData:any})
           }}
           className="h-64 w-full"
         >
-          <BarChart data={chartData}>
+          <ResponsiveContainer>
+          <BarChart data={chartData}  margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="status"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              interval={0}
             />
             <YAxis tickLine={false} axisLine={false} />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Bar dataKey="count" fill="var(--color-count)" radius={6}  maxBarSize={35} />
           </BarChart>
+          </ResponsiveContainer>
         </ChartContainer>
         </div>
       

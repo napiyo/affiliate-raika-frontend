@@ -58,7 +58,7 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
   return (
-    <Card className='@container/card'>
+    <Card className='@container/card max-w-full'>
       <CardHeader>
         <CardTitle>Earning Overview</CardTitle>
         <CardDescription>
