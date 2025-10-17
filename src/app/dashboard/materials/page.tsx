@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import PageContainer from "@/components/layout/page-container"
+import { useAuthStore } from "@/lib/userStore"
+import { Role_ENUM } from "@/types/user"
 
 type MaterialType = "image" | "video" | "other"
 
@@ -360,7 +362,7 @@ function AdminList({
 
 export default function MaterialsPage() {
   const [isAdmin, setIsAdmin] = useState(false)
-
+  const {user} = useAuthStore()
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     setMounted(true)
@@ -488,7 +490,10 @@ export default function MaterialsPage() {
             Browse and download approved assets. Admins can add, edit, and remove items.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        {
+          user?.role == Role_ENUM.ADMIN &&
+
+          <div className="flex items-center gap-2">
           {!isAdmin ? (
             <Button variant="secondary" onClick={() => setIsAdmin(true)}>
               Admin
@@ -499,6 +504,7 @@ export default function MaterialsPage() {
             </Button>
           )}
         </div>
+        }
       </div>
 
       {isAdmin ? (
