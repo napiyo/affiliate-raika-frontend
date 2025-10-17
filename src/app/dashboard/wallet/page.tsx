@@ -681,7 +681,7 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
   return (
    <>
       {/* Card list */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 sm:hidden">
         {transactions.map((txn) => (
           <Card
             key={txn.txnId}
