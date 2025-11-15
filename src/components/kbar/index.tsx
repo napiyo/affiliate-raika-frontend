@@ -21,8 +21,8 @@ export default function KBar({ children }: { children: React.ReactNode }) {
     const navigateTo = (url: string) => {
       router.push(url);
     };
-
-    return navItems.flatMap((navItem) => {
+    
+    return navItems.flatMap((navItem,i) => {
       // Only include base action if the navItem has a real URL and is not just a container
       const baseAction =
         navItem.url !== '#'
@@ -48,9 +48,19 @@ export default function KBar({ children }: { children: React.ReactNode }) {
           subtitle: `Go to ${childItem.title}`,
           perform: () => navigateTo(childItem.url)
         })) ?? [];
+          const addRefferal =
+        navItem.title === "referrals"?[{
+          id: `${navItem.title.toLowerCase()+"addLead"}Action`,
+          name: "Refer someone",
+          shortcut: ['r', 'n'],
+          keywords: "refer",
+          section: navItem.title,
+          subtitle: `Refer someone manually`,
+          perform: () => navigateTo(navItem.url+"?refernow=true")
+        }] :[];
 
       // Return only valid actions (ignoring null base actions for containers)
-      return baseAction ? [baseAction, ...childActions] : childActions;
+      return baseAction ? [baseAction, ...childActions,...addRefferal] : childActions;
     });
   }, [router]);
 

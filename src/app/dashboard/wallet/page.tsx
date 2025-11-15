@@ -311,11 +311,12 @@ const [pagination, setPagination] = useState({
 
      
        
-      
+
       {/* Transactions Table */}
       {id&&
+   
 
-          <Alert >
+<Alert >
             <AlertTitle>  <Link href={`/dashboard/admin/users/${id}`}> showing result for user : <span className='underline'>{id}</span></Link></AlertTitle>
             </Alert>
     }
@@ -323,10 +324,15 @@ const [pagination, setPagination] = useState({
            <AlertDescription>{"We do settlement on every friday, still if you want to withdraw your funds, you can reach out to us raikaphotography@gmail.com"}</AlertDescription>
           
             </Alert>
+            <Card>
+              <CardContent>
+           
 <div className='w-full max-w-full'>
 
     <WalletChart id={id}/>
 </div>
+    </CardContent>
+    </Card>
     
       <Card>
         <CardHeader>

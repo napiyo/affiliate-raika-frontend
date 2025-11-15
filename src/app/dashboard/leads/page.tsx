@@ -627,6 +627,7 @@ const LeadsPage = () => {
                 <Table className="min-w-max w-full">
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="whitespace-nowrap">Id</TableHead>
                       <TableHead className="whitespace-nowrap">Name</TableHead>
                       <TableHead className="hidden md:table-cell whitespace-nowrap">Email</TableHead>
                       <TableHead className="whitespace-nowrap">Phone</TableHead>
@@ -641,6 +642,7 @@ const LeadsPage = () => {
                   <TableBody>
                     {leads.map((lead) => (
                       <TableRow key={lead.id}>
+                        <TableCell className="font-medium max-w-[150px] truncate">{lead.id}</TableCell>
                         <TableCell className="font-medium max-w-[150px] truncate">{lead.name}</TableCell>
                         <TableCell className="hidden md:table-cell max-w-[200px] truncate">{lead.email || '-'}</TableCell>
                         <TableCell className="whitespace-nowrap">{lead.phone}</TableCell>

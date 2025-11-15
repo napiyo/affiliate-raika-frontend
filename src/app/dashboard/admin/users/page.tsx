@@ -164,7 +164,10 @@ finally{
           </div>
 
           {/* Users Table */}
-       <div className="w-full overflow-x-auto -mx-4 px-4">
+       
+       <CardContent>
+     
+
   <Table className="min-w-max text-sm w-full">
             <TableHeader>
               <TableRow>
@@ -217,7 +220,8 @@ finally{
               ))}
             </TableBody>
           </Table>
-        </div>
+          </CardContent>
+       
          {/* Pagination */}
          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 w-full min-w-0">
          <div className="flex items-center gap-2">

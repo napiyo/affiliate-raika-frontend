@@ -14,6 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar';
+import { useAuthStore } from '@/lib/userStore';
 
 interface Tenant {
   id: string;
@@ -43,6 +44,7 @@ export function OrgSwitcher({
   if (!selectedTenant) {
     return null;
   }
+  const {user} = useAuthStore();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -56,7 +58,7 @@ export function OrgSwitcher({
                 <GalleryVerticalEnd className='size-4' />
               </div>
               <div className='flex flex-col gap-0.5 leading-none'>
-                <span className='font-semibold'>Next Starter</span>
+                <span className='font-semibold'>{user?.role}</span>
                 <span className=''>{selectedTenant.name}</span>
               </div>
               <ChevronsUpDown className='ml-auto' />
