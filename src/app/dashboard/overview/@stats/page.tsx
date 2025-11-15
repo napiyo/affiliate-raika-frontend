@@ -23,48 +23,48 @@ export default function Sales() {
     
   }, [])
   
-  return<div className='flex flex-1 flex-col space-y-2'>
+  return<div className='flex flex-1 flex-col space-y-2 min-w-0 w-full'>
 
-        <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Total Wallet balance</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+        <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4 min-w-0 w-full'>
+          <Card className='@container/card min-w-0'>
+            <CardHeader className='min-w-0'>
+              <CardDescription className='break-words'>Total Wallet balance</CardDescription>
+              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl break-words'>
                {user?.balance || 0} ₹
               </CardTitle>
            
-              {user?.points || 0} Points
+              <div className='break-words'>{user?.points || 0} Points</div>
            
             </CardHeader>
           </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Total payout</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+          <Card className='@container/card min-w-0'>
+            <CardHeader className='min-w-0'>
+              <CardDescription className='break-words'>Total payout</CardDescription>
+              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl break-words'>
                {user?.lifetimeWithdrawn} ₹
               </CardTitle>
-               Total payout so far
+               <div className='break-words'>Total payout so far</div>
             </CardHeader>
           
           </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>total Leads</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+          <Card className='@container/card min-w-0'>
+            <CardHeader className='min-w-0'>
+              <CardDescription className='break-words'>total Leads</CardDescription>
+              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl break-words'>
                 {user?.totalLeads || 0} 
               </CardTitle>
-             Total Leads generated so far
+             <div className='break-words'>Total Leads generated so far</div>
              
             </CardHeader>
             
           </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Conversion Rate</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+          <Card className='@container/card min-w-0'>
+            <CardHeader className='min-w-0'>
+              <CardDescription className='break-words'>Conversion Rate</CardDescription>
+              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl break-words'>
                 {(user?.totalLeadsConv*100/(user?.totalLeads||1)).toFixed(2)}%
               </CardTitle>
-              <div className='text-sm'>
+              <div className='text-sm break-words'>
 
                   Total {user?.totalLeadsConv} leads Converted
               </div>

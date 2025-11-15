@@ -103,26 +103,26 @@ const ProfilePage = () => {
   };
   return (
     <PageContainer>
-    <div className="p-4 flex items-center">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="p-4 flex items-center w-full min-w-0">
+      <div className="w-full max-w-4xl mx-auto space-y-6 min-w-0">
         {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-          <p className="text-muted-foreground">
+        <div className="space-y-2 min-w-0">
+          <h1 className="text-3xl font-bold tracking-tight break-words">Profile</h1>
+          <p className="text-muted-foreground break-words">
             Manage your affiliate account information and referral settings
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full min-w-0">
           {/* Main Profile Information */}
-          <div className="lg:col-span-2 order-2 md:order-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Information</CardTitle>
+          <div className="lg:col-span-2 order-2 md:order-1 min-w-0">
+            <Card className="min-w-0">
+              <CardHeader className="min-w-0">
+                <CardTitle className="break-words">Account Information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 min-w-0">
                 {/* Personal Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                   <ProfileField label="Full Name" value={user?.name} />
                   <ProfileField label="Email Address" value={user.email} />
                   <ProfileField label="Phone Number" value={user.phone} />
@@ -176,15 +176,15 @@ const ProfilePage = () => {
           </div>
 
           {/* Referral Section */}
-          <div className='order-1 md:order-2'>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Share2 className="h-5 w-5" />
+          <div className='order-1 md:order-2 min-w-0'>
+            <Card className="min-w-0">
+              <CardHeader className="min-w-0">
+                <CardTitle className="flex items-center space-x-2 break-words">
+                  <Share2 className="h-5 w-5 shrink-0" />
                   <span>Referral Program</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 min-w-0">
                 {/* Referral Stats */}
                 <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
@@ -195,13 +195,13 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Referral Link */}
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                   <Label className="text-sm font-medium text-muted-foreground">Referral Link</Label>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 min-w-0">
                     <Input 
                       value={referralLink} 
                       disabled 
-                      className="bg-muted/50 text-xs"
+                      className="bg-muted/50 text-xs min-w-0 flex-1"
                     />
                     <Button
                       variant="outline"

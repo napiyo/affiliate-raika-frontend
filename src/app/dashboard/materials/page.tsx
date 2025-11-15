@@ -87,19 +87,19 @@ function MaterialsGrid({ items }: { items: Material[] }) {
     return <div className="text-muted-foreground text-sm">No materials yet. Please check back later.</div>
   }
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-full min-w-0">
       {items.map((m) => (
-        <Card key={m.id} className="flex flex-col">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-pretty">{m.title}</CardTitle>
-            <CardDescription className="flex items-center gap-2">
-              <Badge variant="secondary" className="capitalize">
+        <Card key={m.id} className="flex flex-col min-w-0">
+          <CardHeader className="space-y-1 min-w-0">
+            <CardTitle className="text-pretty break-words">{m.title}</CardTitle>
+            <CardDescription className="flex items-center gap-2 flex-wrap">
+              <Badge variant="secondary" className="capitalize shrink-0">
                 {m.type}
               </Badge>
-              <span className="text-xs text-muted-foreground">{formatISODate(m.createdAt)}</span>
+              <span className="text-xs text-muted-foreground shrink-0">{formatISODate(m.createdAt)}</span>
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1">
+          <CardContent className="flex-1 min-w-0">
             {m.thumbnailUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -115,7 +115,7 @@ function MaterialsGrid({ items }: { items: Material[] }) {
                 className="w-full h-40 object-cover rounded-md border border-border"
               />
             )}
-            {m.description ? <p className="mt-3 text-sm text-muted-foreground text-pretty">{m.description}</p> : null}
+            {m.description ? <p className="mt-3 text-sm text-muted-foreground text-pretty break-words">{m.description}</p> : null}
           </CardContent>
           <CardFooter className="flex items-center justify-between">
             <DownloadButton material={m} />
@@ -482,11 +482,11 @@ export default function MaterialsPage() {
 
   return (
     <PageContainer>
-    <div className="container mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-balance">Marketing Materials</h1>
-          <p className="text-sm text-muted-foreground">
+    <div className="w-full min-w-0 px-4 py-8">
+      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full min-w-0">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl font-semibold tracking-tight text-balance break-words">Marketing Materials</h1>
+          <p className="text-sm text-muted-foreground break-words">
             Browse and download approved assets. Admins can add, edit, and remove items.
           </p>
         </div>
@@ -508,8 +508,8 @@ export default function MaterialsPage() {
       </div>
 
       {isAdmin ? (
-        <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 grid gap-6">
+        <section className="grid grid-cols-1 gap-6 lg:grid-cols-3 w-full min-w-0">
+          <div className="lg:col-span-2 grid gap-6 min-w-0">
             <AdminForm
               onCreate={(input) => {
                 addMaterial(input)
@@ -540,7 +540,7 @@ export default function MaterialsPage() {
           </div>
         </section>
       ) : (
-        <section className="grid gap-6">
+        <section className="grid gap-6 w-full min-w-0">
           <MaterialsGrid items={materials} />
         </section>
       )}

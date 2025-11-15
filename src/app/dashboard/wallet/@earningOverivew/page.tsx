@@ -58,14 +58,14 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
   return (
-    <Card className='@container/card max-w-full'>
-      <CardHeader>
-        <CardTitle>Earning Overview</CardTitle>
-        <CardDescription>
+    <Card className='@container/card max-w-full w-full min-w-0'>
+      <CardHeader className="min-w-0">
+        <CardTitle className="break-words">Earning Overview</CardTitle>
+        <CardDescription className="break-words">
           Showing total earning for the last  month
         </CardDescription>
       </CardHeader>
-      <CardContent className='px-2 pt-4 sm:px-6 sm:pt-6'>
+      <CardContent className='px-2 pt-4 sm:px-6 sm:pt-6 min-w-0 w-full'>
         <ChartContainer
           config={chartConfig}
           className='aspect-auto h-[250px] w-full'

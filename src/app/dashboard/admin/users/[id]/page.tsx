@@ -142,15 +142,15 @@ export default function AdminUserProfile() {
    
   return (
     <PageContainer>
-    <div className="bg-background p-4 md:p-8 flex-1">
+    <div className="bg-background p-4 md:p-8 flex-1 w-full min-w-0">
  
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="w-full max-w-6xl mx-auto space-y-6 min-w-0">
         
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">User Profile</h1>
-            <p className="text-muted-foreground">Manage user information and view statistics</p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full min-w-0">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl font-bold tracking-tight break-words">User Profile</h1>
+            <p className="text-muted-foreground break-words">Manage user information and view statistics</p>
           </div>
           {/* <Badge variant="secondary" className="text-sm px-3 py-1">
             Admin View
@@ -188,21 +188,21 @@ export default function AdminUserProfile() {
           </CardHeader>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full min-w-0">
           
           {/* Profile Information */}
-          <div className="lg:col-span-2 flex flex-col gap-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>User personal and banking details</CardDescription>
+          <div className="lg:col-span-2 flex flex-col gap-3 min-w-0">
+            <Card className="min-w-0">
+              <CardHeader className="min-w-0">
+                <CardTitle className="break-words">Profile Information</CardTitle>
+                <CardDescription className="break-words">User personal and banking details</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 min-w-0">
                 
                 {/* Personal Information */}
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Personal Details</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="min-w-0">
+                  <h3 className="text-lg font-medium mb-4 break-words">Personal Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
                       {isEditing ? (
@@ -449,13 +449,13 @@ export default function AdminUserProfile() {
           </div>
 
           {/* Statistics and Actions */}
-          <div className="space-y-6">
+          <div className="space-y-6 min-w-0">
             
             {/* Financial Statistics */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
+            <Card className="min-w-0">
+              <CardHeader className="min-w-0">
+                <CardTitle className="flex items-center gap-2 break-words">
+                  <CreditCard className="h-5 w-5 shrink-0" />
                   Financial Overview
                 </CardTitle>
               </CardHeader>

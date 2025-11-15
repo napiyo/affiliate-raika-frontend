@@ -26,6 +26,7 @@ export interface User {
 
 
 export interface TransactionInterface {
+  status: 'SUCCESS' | 'FAILED' | 'PENDING',
   type: TransactionType,
   amount: number,
   comment: string,

@@ -432,7 +432,7 @@ const [pagination, setPagination] = useState({
             <TransactionsTableSkeleton />
           ) : transactions?.length > 0 ? (
             <>
-              <Table className='hidden sm:block'>
+              <Table className='hidden sm:block w-full table-auto'>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Transaction Id</TableHead>
@@ -441,8 +441,11 @@ const [pagination, setPagination] = useState({
                     <TableHead>Referrence</TableHead>
                     <TableHead>Comment</TableHead>
                     <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+
                     {user?.role == Role_ENUM.ADMIN &&<TableHead>User</TableHead> }
                     {user?.role == Role_ENUM.ADMIN &&<TableHead>Created by</TableHead> }
+
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -464,11 +467,16 @@ const [pagination, setPagination] = useState({
                           {transaction.reference}                                                                                                                           
                        
                       </TableCell>
-                      <TableCell className='hover:overflow-x-auto not-hover:truncate '>
+                      <TableCell className='max-w-xs truncate min-w-0'>
                        {transaction.comment}
                       </TableCell>
                       <TableCell className="capitalize">
                      { format(new Date(transaction.createdAt), "dd MMM yyyy HH:mm")}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={transaction.status === 'SUCCESS' ? 'default' : 'secondary'}>
+                          {transaction.status}
+                        </Badge>
                       </TableCell>
                       {user?.role == Role_ENUM.ADMIN &&
 
@@ -782,7 +790,17 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                     {format(new Date(selectedTxn.createdAt), 'dd MMM yyyy HH:mm')}
                   </div>
                 </div>
-
+                <div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                    Status
+                  </div>
+                  <div>
+                    {selectedTxn.status === 'SUCCESS' ? 'Success' : selectedTxn.status === 'FAILED' ? 'Failed' : 'Pending'}
+                    <Badge variant={selectedTxn.status === 'SUCCESS' ? 'default' : 'secondary'}>
+                          {selectedTxn.status}
+                        </Badge>
+                  </div>
+                </div>
                 {user?.role === Role_ENUM.ADMIN && (
                   <>
                     <div>

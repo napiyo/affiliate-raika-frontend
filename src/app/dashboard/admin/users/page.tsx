@@ -104,20 +104,20 @@ finally{
 
   return (
     <PageContainer>
-    <div className='flex-1 flex w-full max-w-full overflow-x-auto'>
-      <Card className="flex-1 flex max-w-full">
+      <Card className="w-full min-w-0">
         <CardHeader>
           <CardTitle>Manage Users</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 max-w-full">
+        <CardContent className="space-y-4 w-full min-w-0">
           {/* Filters */}
-          <div className="flex  gap-3   max-w-full flex-row flex-wrap">
-            <div className="flex flex-1 max-w-full flex-row items-center gap-3 flex-wrap">
+          <div className="flex gap-3 w-full min-w-0 flex-row flex-wrap">
+            <div className="flex flex-1 min-w-0 flex-row items-center gap-3 flex-wrap">
 
             <Input
               placeholder="Search user"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              className="min-w-[200px]"
               />
               <Button onClick={userByEmail}>
                 <Search >Find</Search>
@@ -164,43 +164,40 @@ finally{
           </div>
 
           {/* Users Table */}
-       
-
-         
-       <div className="w-full overflow-x-auto">
-  <Table className="min-w-max text-sm">
+       <div className="w-full overflow-x-auto -mx-4 px-4">
+  <Table className="min-w-max text-sm w-full">
             <TableHeader>
               <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Balance</TableHead>
-                <TableHead>Earnings</TableHead>
-                <TableHead>Points</TableHead>
-                <TableHead>L.Points</TableHead>
-                <TableHead>Leads</TableHead>
-                <TableHead>Conv. Leads</TableHead>
-                <TableHead>Verified</TableHead>
-                <TableHead>Suspended</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="whitespace-nowrap">Email</TableHead>
+                <TableHead className="whitespace-nowrap">Name</TableHead>
+                <TableHead className="whitespace-nowrap">Role</TableHead>
+                <TableHead className="whitespace-nowrap">Phone</TableHead>
+                <TableHead className="whitespace-nowrap">Balance</TableHead>
+                <TableHead className="whitespace-nowrap">Earnings</TableHead>
+                <TableHead className="whitespace-nowrap">Points</TableHead>
+                <TableHead className="whitespace-nowrap">L.Points</TableHead>
+                <TableHead className="whitespace-nowrap">Leads</TableHead>
+                <TableHead className="whitespace-nowrap">Conv. Leads</TableHead>
+                <TableHead className="whitespace-nowrap">Verified</TableHead>
+                <TableHead className="whitespace-nowrap">Suspended</TableHead>
+                <TableHead className="whitespace-nowrap">Created</TableHead>
+                <TableHead className="whitespace-nowrap">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.map((user) => (
                 <TableRow key={user._id}>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>{user.phone || "-"}</TableCell>
-                  <TableCell>{user.balance }</TableCell>
-                  <TableCell>{user.lifetimeWithdrawn}</TableCell>
-                  <TableCell>{user.points }</TableCell>
-                  <TableCell>{user.lifetimePointsWithdrawn }</TableCell>
-                  <TableCell>{user.totalLeads}</TableCell>
-                  <TableCell>{user.totalLeadsConv}</TableCell>
-                  <TableCell>
+                  <TableCell className="max-w-[200px] truncate">{user.email}</TableCell>
+                  <TableCell className="max-w-[150px] truncate">{user.name}</TableCell>
+                  <TableCell className="whitespace-nowrap">{user.role}</TableCell>
+                  <TableCell className="whitespace-nowrap">{user.phone || "-"}</TableCell>
+                  <TableCell className="whitespace-nowrap">{typeof user.balance === 'number' ? user.balance.toFixed(2) : user.balance}</TableCell>
+                  <TableCell className="whitespace-nowrap">{typeof user.lifetimeWithdrawn === 'number' ? user.lifetimeWithdrawn.toFixed(2) : user.lifetimeWithdrawn}</TableCell>
+                  <TableCell className="whitespace-nowrap">{typeof user.points === 'number' ? user.points.toFixed(2) : user.points}</TableCell>
+                  <TableCell className="whitespace-nowrap">{typeof user.lifetimePointsWithdrawn === 'number' ? user.lifetimePointsWithdrawn.toFixed(2) : user.lifetimePointsWithdrawn}</TableCell>
+                  <TableCell className="whitespace-nowrap">{user.totalLeads}</TableCell>
+                  <TableCell className="whitespace-nowrap">{user.totalLeadsConv}</TableCell>
+                  <TableCell className="whitespace-nowrap">
                   {user.verifiedEmail ? (
                           <span className="text-green-600 flex items-center gap-1">
                             <CheckCircle className="h-4 w-4" /> Yes
@@ -209,9 +206,9 @@ finally{
                           <span className="text-red-600">No</span>
                         )}
                         </TableCell>
-                  <TableCell>{user.suspended ? "Yes" : "No"}</TableCell>
-                  <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>
+                  <TableCell className="whitespace-nowrap">{user.suspended ? "Yes" : "No"}</TableCell>
+                  <TableCell className="whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="whitespace-nowrap">
                     <Link href={`users/${user._id}`}>
                       <Button size="sm">View</Button>
                     </Link>
@@ -222,7 +219,7 @@ finally{
           </Table>
         </div>
          {/* Pagination */}
-         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4">
+         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 w-full min-w-0">
          <div className="flex items-center gap-2">
               <Label htmlFor="limit" className="text-sm">Show:</Label>
               <Select
@@ -240,7 +237,7 @@ finally{
                 </SelectContent>
               </Select>
             </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 whitespace-nowrap">
                   Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
                   {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
                   {pagination.total} results
@@ -255,7 +252,7 @@ finally{
                     <ChevronLeft className="h-4 w-4" />
                     Previous
                   </Button>
-                  <span className="text-sm">
+                  <span className="text-sm whitespace-nowrap">
                     Page {pagination.page} of {pagination.totalPages}
                   </span>
                   <Button
@@ -271,7 +268,6 @@ finally{
               </div>
         </CardContent>
       </Card>
-    </div>
     </PageContainer>
   );
 }

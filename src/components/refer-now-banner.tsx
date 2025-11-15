@@ -15,7 +15,7 @@ const ReferralBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div className={`relative bg-gradient-to-r shrink-0 from-primary to-accent text-white shadow-lg overflow-hidden transition-all duration-500 ease-in-out transform 
+    <div className={`relative bg-gradient-to-r shrink-0 from-primary to-accent text-white shadow-lg overflow-hidden overflow-x-hidden transition-all duration-500 ease-in-out transform 
         ${isAnimating ? 'animate-slide-up opacity-0' : 'animate-slide-down opacity-100'}
         `}
       >
@@ -69,15 +69,15 @@ const ReferralBanner = () => {
 
             {/* Content */}
             <div className="flex-1 min-w-0 hidden md:block ">
-              <p className="text-sm sm:text-base font-semibold text-accent-foreground">
+              <p className="text-sm sm:text-base font-semibold text-accent-foreground break-words">
                 Refer Now, and Earn Commission! ✈️
               </p>
-              <p className="text-xs sm:text-sm text-accent-foreground mt-0.5">
+              <p className="text-xs sm:text-sm text-accent-foreground mt-0.5 break-words">
                 Refer someone and our sales team will get in touch with them and get commsion for every successful referral
               </p>
             </div>
             <div className="flex-1 min-w-0 md:hidden ">
-              <p className="text-sm sm:text-base font-semibold text-accent-foreground">
+              <p className="text-sm sm:text-base font-semibold text-accent-foreground break-words">
                 Earn Commission! ✈️
               </p>
             </div>

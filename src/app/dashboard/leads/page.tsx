@@ -330,7 +330,7 @@ const LeadsPage = () => {
   useEffect(() => {
     // if(loading) return;
     // if (filters.status !== 'all' || filters.timeRange !== 'all') {
-      if(filters.timeRange =='custom' && (!filters.customEndDate || !filters.customEndDate))
+      if(filters.timeRange =='custom' && (!filters.customStartDate || !filters.customEndDate))
       {
         return;
       }
@@ -338,7 +338,7 @@ const LeadsPage = () => {
 
       fetchLeads();
     // }
-  }, [pagination.page, pagination.limit,filters.status, filters.timeRange, filters.customEndDate, filters.customEndDate]);
+  }, [pagination.page, pagination.limit,filters.status, filters.timeRange, filters.customStartDate, filters.customEndDate]);
  const [reqChip, setReqChip] = useState<string[]>([]);
 
   const reqOptions = ["Toddler", "New Born", "Maternity", "Event", "wedding"];
@@ -352,11 +352,11 @@ const LeadsPage = () => {
   };
   return (
     <PageContainer >
-      <div className="flex  max-w-full flex-1 flex-col gap-4">
+      <div className="flex max-w-full w-full min-w-0 flex-1 flex-col gap-4">
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold">Referrals Management</h1>
+      {/* Header */}  
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full min-w-0">
+        <h1 className="text-3xl font-bold break-words">Referrals Management</h1>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button className="flex items-center gap-2">
@@ -456,20 +456,21 @@ const LeadsPage = () => {
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-         <div className="flex flex-col sm:flex-row justify-between gap-4">
+         <div className="flex flex-col sm:flex-row justify-between gap-4 w-full min-w-0">
             {/* Search */}
            
-            <div className="md:col-span-1 w-full">
+            <div className="md:col-span-1 w-full min-w-0">
               <Label htmlFor="search">Search</Label>
-              <div className="flex gap-2 mt-1">
+              <div className="flex gap-2 mt-1 w-full min-w-0">
                 <Input
                   id="search"
                   placeholder="Search by name, phone, leadId"
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  className="min-w-0 flex-1"
                 />
-                <Button onClick={handleSearch} size="sm"  disabled={!filters.search || loading}>
+                <Button onClick={handleSearch} size="sm"  disabled={!filters.search || loading} className="shrink-0">
                  {loading ? <Spinner />:
                   <Search className="h-4 w-4" />
                  }
@@ -480,7 +481,7 @@ const LeadsPage = () => {
                     handleClearSearch()
 
                    
-           }} size="sm" disabled={loading}>
+           }} size="sm" disabled={loading} className="shrink-0">
                  <Label>Clear</Label>
                 </Button>
                 }
@@ -488,7 +489,7 @@ const LeadsPage = () => {
             </div>
 
             {/* Status Filter */}
-            <div className='flex flex-row gap-4 max-w-full flex-wrap'>
+            <div className='flex flex-row gap-4 w-full min-w-0 flex-wrap'>
             <div>
               <Label>Status</Label>
               <Select value={filters.status} onValueChange={handleStatusFilter}>
@@ -622,27 +623,27 @@ const LeadsPage = () => {
             {/* Mobile list */}
             <MobileList leads={leads} statusConfig={statusConfig} user={user}/>
             {/* desktop table */}
-              <div className="overflow-x-auto hidden md:block">
-                <Table>
+              <div className="overflow-x-auto hidden md:block w-full -mx-4 px-4">
+                <Table className="min-w-max w-full">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead className="hidden md:table-cell">Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead className="hidden lg:table-cell">Requirement</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="hidden sm:table-cell">Created</TableHead>
+                      <TableHead className="whitespace-nowrap">Name</TableHead>
+                      <TableHead className="hidden md:table-cell whitespace-nowrap">Email</TableHead>
+                      <TableHead className="whitespace-nowrap">Phone</TableHead>
+                      <TableHead className="hidden lg:table-cell whitespace-nowrap">Requirement</TableHead>
+                      <TableHead className="whitespace-nowrap">Status</TableHead>
+                      <TableHead className="hidden sm:table-cell whitespace-nowrap">Created</TableHead>
                       {
-                       (user?.role == Role_ENUM.ADMIN || user?.role == Role_ENUM.SALES) && <TableHead className="hidden sm:table-cell">Created By</TableHead>
+                       (user?.role == Role_ENUM.ADMIN || user?.role == Role_ENUM.SALES) && <TableHead className="hidden sm:table-cell whitespace-nowrap">Created By</TableHead>
                       }
                         </TableRow>
                   </TableHeader>
                   <TableBody>
                     {leads.map((lead) => (
                       <TableRow key={lead.id}>
-                        <TableCell className="font-medium">{lead.name}</TableCell>
-                        <TableCell className="hidden md:table-cell">{lead.email || '-'}</TableCell>
-                        <TableCell>{lead.phone}</TableCell>
+                        <TableCell className="font-medium max-w-[150px] truncate">{lead.name}</TableCell>
+                        <TableCell className="hidden md:table-cell max-w-[200px] truncate">{lead.email || '-'}</TableCell>
+                        <TableCell className="whitespace-nowrap">{lead.phone}</TableCell>
                         <TableCell className="hidden lg:table-cell max-w-xs truncate">
                           {lead.requirement}
                         </TableCell>
@@ -668,8 +669,8 @@ const LeadsPage = () => {
               </div>
 
               {/* Pagination */}
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4">
-                <div className="text-sm text-gray-500">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 w-full min-w-0">
+                <div className="text-sm text-gray-500 whitespace-nowrap">
                   Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
                   {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
                   {pagination.total} results
@@ -684,7 +685,7 @@ const LeadsPage = () => {
                     <ChevronLeft className="h-4 w-4" />
                     Previous
                   </Button>
-                  <span className="text-sm">
+                  <span className="text-sm whitespace-nowrap">
                     Page {pagination.page} of {pagination.totalPages}
                   </span>
                   <Button
@@ -786,12 +787,12 @@ function MobileList({leads,statusConfig,user}:{leads:Lead[],statusConfig:any,use
 
 function LeadChart({chartData}:{chartData:any})
 {
-  return(   <Card className='@container/card'>
-      <CardHeader>
-        <CardTitle>Referrals by Status</CardTitle>
+  return(   <Card className='@container/card w-full min-w-0'>
+      <CardHeader className="min-w-0">
+        <CardTitle className="break-words">Referrals by Status</CardTitle>
       </CardHeader>
-  <CardContent>
-         <div className="w-full max-w-full overflow-x-auto">
+  <CardContent className="min-w-0 w-full">
+         <div className="w-full max-w-full overflow-x-auto min-w-0">
    
         <ChartContainer
           config={{
