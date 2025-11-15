@@ -352,7 +352,7 @@ const LeadsPage = () => {
   };
   return (
     <PageContainer >
-      <div className="flex max-w-full w-full min-w-0 flex-1 flex-col gap-4">
+      <div className="flex w-full max-w-full min-w-0 flex-1 flex-col gap-4">
 
       {/* Header */}  
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full min-w-0">
@@ -623,7 +623,7 @@ const LeadsPage = () => {
             {/* Mobile list */}
             <MobileList leads={leads} statusConfig={statusConfig} user={user}/>
             {/* desktop table */}
-              <div className="overflow-x-auto hidden md:block w-full -mx-4 px-4">
+              <div className="overflow-x-auto hidden md:block w-full min-w-0">
                 <Table className="min-w-max w-full">
                   <TableHeader>
                     <TableRow>
@@ -735,6 +735,10 @@ function MobileList({leads,statusConfig,user}:{leads:Lead[],statusConfig:any,use
                 </SheetDescription>
               </SheetHeader>
               <div className="mt-4 space-y-3 text-sm flex flex-col p-4 gap-2">
+                 <div className='flex flex-col gap-1'>
+                  <Label className="text-muted-foreground">Id</Label>
+                  <div>{lead.id}</div>
+                </div>
                 <div className='flex flex-col gap-1'>
                   <Label className="text-muted-foreground">Phone</Label>
                   <div>{lead.phone}</div>

@@ -229,7 +229,7 @@ const [pagination, setPagination] = useState({
 
   return (
     <PageContainer>
-    <div className="container mx-auto space-y-8">
+    <div className="w-full max-w-full min-w-0 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -242,7 +242,7 @@ const [pagination, setPagination] = useState({
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full min-w-0">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Curent Balance</CardTitle>
@@ -324,15 +324,13 @@ const [pagination, setPagination] = useState({
            <AlertDescription>{"We do settlement on every friday, still if you want to withdraw your funds, you can reach out to us raikaphotography@gmail.com"}</AlertDescription>
           
             </Alert>
-            <Card>
-              <CardContent>
+           
            
 <div className='w-full max-w-full'>
 
     <WalletChart id={id}/>
 </div>
-    </CardContent>
-    </Card>
+    
     
       <Card>
         <CardHeader>
@@ -340,7 +338,7 @@ const [pagination, setPagination] = useState({
           <CardDescription>View and filter your transaction history</CardDescription>
           
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-4 max-w-full items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full max-w-full min-w-0 items-center justify-between">
             <div className="relative flex-1/3 flex flex-row gap-4 items-center ">
               <Search className="absolute left-3  h-4 w-4 text-muted-foreground" />
               <Input
@@ -438,7 +436,8 @@ const [pagination, setPagination] = useState({
             <TransactionsTableSkeleton />
           ) : transactions?.length > 0 ? (
             <>
-              <Table className='hidden sm:block w-full table-auto'>
+              <div className="overflow-x-auto hidden sm:block w-full min-w-0">
+                <Table className='w-full table-auto min-w-max'>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Transaction Id</TableHead>
@@ -504,6 +503,7 @@ const [pagination, setPagination] = useState({
                   ))}
                 </TableBody>
               </Table>
+              </div>
               <TransactionCards transactions={transactions} user={user} />
 
               {/* Pagination */}

@@ -142,7 +142,7 @@ export default function AdminUserProfile() {
    
   return (
     <PageContainer>
-    <div className="bg-background p-4 md:p-8 flex-1 w-full min-w-0">
+    <div className="bg-background p-4 md:p-8 flex-1 w-full max-w-full min-w-0">
  
       <div className="w-full max-w-6xl mx-auto space-y-6 min-w-0">
         

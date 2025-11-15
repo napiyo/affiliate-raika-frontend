@@ -108,9 +108,9 @@ finally{
         <CardHeader>
           <CardTitle>Manage Users</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 w-full min-w-0">
+        <CardContent className="space-y-4 w-full max-w-full min-w-0">
           {/* Filters */}
-          <div className="flex gap-3 w-full min-w-0 flex-row flex-wrap">
+          <div className="flex gap-3 w-full max-w-full min-w-0 flex-row flex-wrap">
             <div className="flex flex-1 min-w-0 flex-row items-center gap-3 flex-wrap">
 
             <Input
@@ -165,10 +165,11 @@ finally{
 
           {/* Users Table */}
        
-       <CardContent>
+       <CardContent className="w-full min-w-0">
      
 
-  <Table className="min-w-max text-sm w-full">
+  <div className="overflow-x-auto w-full min-w-0">
+    <Table className="min-w-max text-sm w-full">
             <TableHeader>
               <TableRow>
                 <TableHead className="whitespace-nowrap">Email</TableHead>
@@ -220,6 +221,7 @@ finally{
               ))}
             </TableBody>
           </Table>
+          </div>
           </CardContent>
        
          {/* Pagination */}

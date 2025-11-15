@@ -482,7 +482,7 @@ export default function MaterialsPage() {
 
   return (
     <PageContainer>
-    <div className="w-full min-w-0 px-4 py-8">
+    <div className="w-full max-w-full min-w-0 px-4 py-8">
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full min-w-0">
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-semibold tracking-tight text-balance break-words">Marketing Materials</h1>
