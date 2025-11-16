@@ -12,8 +12,7 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
     >
       <table
         data-slot='table'
-        className={cn('w-full caption-bottom text-sm', className)}
-        style={{ minWidth: 'max-content' }}
+        className={cn('w-full caption-bottom text-sm min-w-0', className)}
         {...props}
       />
     </div>
