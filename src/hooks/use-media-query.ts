@@ -1,4 +1,3 @@
-import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export function useMediaQuery() {
@@ -15,14 +14,6 @@ export function useMediaQuery() {
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
-  // const pathname = usePathname();
-  // useEffect(() => {
-  //   const mediaQuery = window.matchMedia('(max-width: 768px)');
-  //   if (mediaQuery.matches) {
-  //     console.log("close IsPoe");
-      
-  //     setIsOpen(false);
-  //   }
-  // }, [pathname]);
+  
   return { isOpen };
 }

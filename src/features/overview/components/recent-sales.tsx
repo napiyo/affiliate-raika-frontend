@@ -37,7 +37,6 @@ export function RecentSales() {
       const load = async()=>{
         try{
             const res = await api.get('/dashboard/lastTransactions')
-            // console.log(res.data);
             setTransactionData(res.data.data)
             
           }

@@ -154,12 +154,8 @@ const [pagination, setPagination] = useState({
       const {data} = response.data;
       setPagination((prev)=>({page:data.page,limit:data.limit,total:data.total,totalPages: Math.ceil(data.total/data.limit)}))
 
-      
-      // Cache the response
-    //   cache.set(cacheKey, { data: response.data, total: response.data.total })
     } catch (error) {
-    //   console.error('Failed to fetch transactions:', error)
-    toast.error('Failed to fetch transactions')
+      toast.error('Failed to fetch transactions')
     } finally {
       setTransactionsLoading(false)
     }
@@ -173,8 +169,7 @@ const [pagination, setPagination] = useState({
         {  
             url+= '?id='+id
         }
-        const res =  await api.get(url); // yup, ?id is wrong, me is for me, but due to time issue, Im doing it
-        // console.log(res);
+        const res = await api.get(url);
         
        
         

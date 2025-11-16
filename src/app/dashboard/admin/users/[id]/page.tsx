@@ -119,8 +119,6 @@ export default function AdminUserProfile() {
   }
   const {id} = useParams()
   const fetchUser = async()=>{
-    console.log("calling fetchUser");
-    
     try{
 
       const res = await api.get(`/users/${id}`);

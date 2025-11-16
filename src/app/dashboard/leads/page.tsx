@@ -41,13 +41,10 @@ import PageContainer from '@/components/layout/page-container';
 import api from '@/lib/apiService';
 import { toast } from 'sonner';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { ProgressIndicator } from '@radix-ui/react-progress';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { flushSync } from 'react-dom';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
-import { Lead, Role_ENUM, User, USER_ROLE } from '@/types/user';
+import { Lead, Role_ENUM, User } from '@/types/user';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/lib/userStore';
 import Link from 'next/link';
@@ -179,17 +176,12 @@ const LeadsPage = () => {
       let chartSource;
       
       if ( !hasAnyFilter && cache[page] && cache[page].leads && pagination.limit == cache[page].leads.length) {
-        // console.log("used cache");
-        
         setLeads(cache[page].leads);
         chartSource = cache[page].leads;
         setPagination(()=>({...cache[page].pagination,page}))
         
       }
       else{
-        // console.log("calling api");
-        
-        // const response = await fetch(`/api/leads?${params}`);
         const apiPromise =  api.post('/leads/search',{query,page:pagination.page-1,limit:pagination.limit});
         
         toast.promise(apiPromise, {
@@ -198,15 +190,10 @@ const LeadsPage = () => {
         });
         const response = await apiPromise;
         const {data} = response.data;
-        // const data: LeadsResponse = await response.json();
-        
-        
         
         setLeads(data.data);
         if(!hasAnyFilter)
           {
-            // console.log('saved cache',query);
-            
             setCache((prev) => ({ ...prev, [page]: {leads:data.data,pagination:{
               page: data.skip/data.limit + 1,
               limit: data.limit,
@@ -236,8 +223,7 @@ const LeadsPage = () => {
       
       setChartData(chartData);
     } catch (error) {
-          // console.log(error);
-          
+      // Error handled by toast.promise
     } finally {
       setLoading(false);
     }

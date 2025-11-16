@@ -15,8 +15,6 @@ export default function Sales() {
     const load = async()=>{
 
       let {data} = await api.get('/users/wallet');
-      // console.log(data);
-      
       setdata(data.data);
     }
     load()

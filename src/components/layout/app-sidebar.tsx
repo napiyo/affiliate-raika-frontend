@@ -209,8 +209,6 @@ export default function AppSidebar() {
                       toast.success("see you soon")
                       router.push('/')
                     }).catch((err)=>{
-                      console.log(err);
-                      
                       toast.error(err.message || "unknow err")
                       })}}>
                   <IconLogout className='mr-2 h-4 w-4' />

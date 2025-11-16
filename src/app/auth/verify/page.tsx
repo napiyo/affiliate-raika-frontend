@@ -22,8 +22,6 @@ export default function EmailVerificationPage() {
   useEffect(() => {
       const res = api.get(`/auth/verify/${token}`).then((response)=>{
         login(response.data.data);
-        // console.log(response.data);
-        
         toast.success("Your email is verified")
        updateStatus('success','Your email is verified, You can login now')
        router.push("/");

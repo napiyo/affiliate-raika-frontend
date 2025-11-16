@@ -48,8 +48,6 @@ export default function AdminUsersPage() {
     try{
       setLoading(true);
       const res = await api.post('/users/userbyemail',{search});
-      // console.log(res);
-      
       setUsers(res.data.data);
     }
     catch(err:any)
