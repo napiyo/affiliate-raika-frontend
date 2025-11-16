@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import PageContainer from '@/components/layout/page-container';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -14,6 +15,34 @@ import WalletChart from '../wallet/@earningOverivew/page';
 import { TopLeadsUsers } from '@/features/overview/components/top-users';
 import ReferralBanner from '@/components/refer-now-banner';
 
+export const metadata: Metadata = {
+  title: 'Dashboard Overview | Raika Photography Affiliate',
+  description: 'View your affiliate dashboard with comprehensive analytics, earnings overview, referral statistics, and performance metrics. Track your success with Raika Photography affiliate program.',
+  keywords: [
+    'affiliate dashboard',
+    'analytics',
+    'earnings overview',
+    'referral statistics',
+    'performance metrics',
+    'Raika Photography',
+    'affiliate analytics',
+    'dashboard overview'
+  ],
+  openGraph: {
+    title: 'Dashboard Overview | Raika Photography Affiliate',
+    description: 'View your affiliate dashboard with comprehensive analytics, earnings overview, and referral statistics.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Dashboard Overview | Raika Photography Affiliate',
+    description: 'Track your affiliate performance with comprehensive analytics and earnings overview.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default async function OverViewLayout({
   sales,

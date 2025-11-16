@@ -25,7 +25,7 @@ export const navItems: NavItem[] = [
     title: 'referrals',
     url: '/dashboard/leads',
     icon: 'magnet',
-    shortcut: ['l', 'l'],
+    shortcut: ['r', 'r'],
     isActive: false,
     items: [] // No child items
   },

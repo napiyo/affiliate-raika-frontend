@@ -286,8 +286,9 @@ const LeadsPage = () => {
 
   // Add lead handler
   const handleAddLead = async () => {
+    let tempreq =  leadForm.requirements;
     try {
-      
+      let leadFromCopy = leadForm;
       reqChip.map((val,i)=>{
         leadForm.requirements+=" +"+val;
       })
@@ -312,7 +313,7 @@ const LeadsPage = () => {
       
     } catch (error:any) {
 
-      
+          setLeadForm((prev)=>({...prev,requirements:tempreq}))
           toast.error(error?.message)
     }
   };
@@ -464,7 +465,7 @@ const LeadsPage = () => {
               <div className="flex gap-2 mt-1 w-full min-w-0">
                 <Input
                   id="search"
-                  placeholder="Search by name, phone, leadId"
+                  placeholder="Search by name, phone, email, leadId"
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -623,8 +624,8 @@ const LeadsPage = () => {
             {/* Mobile list */}
             <MobileList leads={leads} statusConfig={statusConfig} user={user}/>
             {/* desktop table */}
-              <div className="overflow-x-auto hidden md:block w-full min-w-0">
-                <Table className="min-w-max w-full">
+             
+                <Table className="w-full hidden md:block">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="whitespace-nowrap">Id</TableHead>
@@ -666,9 +667,9 @@ const LeadsPage = () => {
                 </Table>
                 <div className='h-12 w-full flex justify-center items-center align-middle'>
 
-                    {leads.length==0 && <Label>No Data - try to remove filters</Label>}
+                    {leads.length==0 && <Label> No Data - try to remove filters if any</Label>}
                 </div>
-              </div>
+              
 
               {/* Pagination */}
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 w-full min-w-0">

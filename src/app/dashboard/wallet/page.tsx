@@ -436,8 +436,8 @@ const [pagination, setPagination] = useState({
             <TransactionsTableSkeleton />
           ) : transactions?.length > 0 ? (
             <>
-              <div className="overflow-x-auto hidden sm:block w-full min-w-0">
-                <Table className='w-full table-auto min-w-max'>
+              <div className="hidden sm:block w-full min-w-0">
+                <Table className='w-full'>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Transaction Id</TableHead>

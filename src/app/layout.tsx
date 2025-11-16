@@ -10,7 +10,8 @@ import './globals.css';
 import './theme.css';
 import { Toaster } from 'sonner';
 import UserProvider from '@/lib/userProvider';
-
+import ClarityProvider from "../providers/ClarityProvider";
+import GtagProvider from '@/providers/GtagProvider';
 const META_THEME_COLORS = {
   light: '#ffffff',
   dark: '#09090b'
@@ -57,6 +58,8 @@ export default async function RootLayout({
           fontVariables
         )}
       >
+         <GtagProvider />
+        <ClarityProvider />
         <NextTopLoader showSpinner={false} />
         <NuqsAdapter>
             <Toaster richColors position="top-right" />

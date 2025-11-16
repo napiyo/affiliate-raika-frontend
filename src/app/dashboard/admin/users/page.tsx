@@ -168,8 +168,8 @@ finally{
        <CardContent className="w-full min-w-0">
      
 
-  <div className="overflow-x-auto w-full min-w-0">
-    <Table className="min-w-max text-sm w-full">
+  <div className="w-full min-w-0">
+    <Table className="text-sm w-full">
             <TableHeader>
               <TableRow>
                 <TableHead className="whitespace-nowrap">Email</TableHead>
