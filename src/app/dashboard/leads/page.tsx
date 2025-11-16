@@ -610,8 +610,8 @@ const LeadsPage = () => {
             {/* Mobile list */}
             <MobileList leads={leads} statusConfig={statusConfig} user={user}/>
             {/* desktop table */}
-             
-                <Table className="w-full hidden md:block">
+             <div className='max-w-full overflow-x-auto hidden md:block'>
+                <Table className="w-full">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="whitespace-nowrap">Id</TableHead>
@@ -651,6 +651,7 @@ const LeadsPage = () => {
                     ))}
                   </TableBody>
                 </Table>
+                </div>
                 <div className='h-12 w-full flex justify-center items-center align-middle'>
 
                     {leads.length==0 && <Label> No Data - try to remove filters if any</Label>}
