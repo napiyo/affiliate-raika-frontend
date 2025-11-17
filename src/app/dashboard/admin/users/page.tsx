@@ -284,7 +284,7 @@ export default function AdminUsersPage() {
           </div>
 
           {/* TanStack Table */}
-          <div className="w-full overflow-x-auto">
+          <div className="w-full overflow-x-auto max-w-">
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
