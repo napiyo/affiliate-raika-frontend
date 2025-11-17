@@ -219,12 +219,12 @@ export default function AdminUsersPage() {
         <CardContent className="space-y-4 w-full max-w-full min-w-0">
           {/* Filters */}
           <div className="flex gap-3 w-full max-w-full min-w-0 flex-row flex-wrap">
-            <div className="flex flex-1 min-w-0 flex-row items-center gap-3 flex-wrap">
+            <div className="flex flex-1 min-w-0 flex-row items-center gap-3">
               <Input
                 placeholder="Search user"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="min-w-[200px]"
+                className="w-full"
               />
               <Button onClick={userByEmail}>
                 <Search>Find</Search>
@@ -291,7 +291,7 @@ export default function AdminUsersPage() {
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id} className="whitespace-nowrap">
+                        <TableHead key={header.id} className="">
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -308,7 +308,7 @@ export default function AdminUsersPage() {
                     table.getRowModel().rows.map((row) => (
                       <TableRow key={row.id}>
                         {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className="whitespace-nowrap">
+                          <TableCell key={cell.id} className="">
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
                         ))}
@@ -345,7 +345,7 @@ export default function AdminUsersPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="text-sm text-gray-500 whitespace-nowrap">
+            <div className="text-sm text-gray-500 ">
               Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
               {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
               {pagination.total} results
@@ -360,7 +360,7 @@ export default function AdminUsersPage() {
                 <ChevronLeft className="h-4 w-4" />
                 Previous
               </Button>
-              <span className="text-sm whitespace-nowrap">
+              <span className="text-sm">
                 Page {pagination.page} of {pagination.totalPages}
               </span>
               <Button
