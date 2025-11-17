@@ -18,6 +18,7 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FilterType {
   sortby?: 'balance' | 'lifetimeEarnings' | 'lifetimeWithdrawn' | 'totalLeads' | 'totalLeadsConv' | 'default';
@@ -284,7 +285,8 @@ export default function AdminUsersPage() {
           </div>
 
           {/* TanStack Table */}
-          <div className="w-full overflow-x-auto max-w-">
+          <div className="w-full overflow-x-auto min-w-0">
+             <ScrollArea className='h-full w-full'>
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -324,6 +326,7 @@ export default function AdminUsersPage() {
                 </TableBody>
               </Table>
             </div>
+            </ScrollArea>
           </div>
 
           {/* Pagination */}
