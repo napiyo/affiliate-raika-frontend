@@ -77,7 +77,9 @@ const {user} = useAuthStore()
 // Combined fetch function that handles both search and filters
 const fetchTransactions = async (useSearch = false) => {
   setTransactionsLoading(true);
-
+  console.log("80 ",useSearch);
+  console.log("80 ",filters);
+  
   try {
     const query: any = {
       page: pagination.page,
@@ -127,7 +129,8 @@ const fetchTransactions = async (useSearch = false) => {
         query.type = filters.type;
       }
     }
-
+ console.log("132", query);
+ 
     const response = await api.post(`/users/mytrasaction`, query);
     const {data} = response.data;
     
@@ -181,7 +184,11 @@ useEffect(() => {
     // Handle search from URL param
     if (searchID && searchID.trim()) {
       setIsSearchMode(true);
+      console.log("184",filters);
+      
       setFilters((prev) => ({ ...prev, search: searchID.trim() }));
+      console.log("185",filters);
+
       // Use setTimeout to ensure state is updated before fetching
       setTimeout(async () => {
         await fetchTransactions(true);
@@ -194,6 +201,7 @@ useEffect(() => {
   };
   
   loadInitialData();
+  
 }, []); // Only run once on mount
 
 // Handle filter changes (only when NOT in search mode)
