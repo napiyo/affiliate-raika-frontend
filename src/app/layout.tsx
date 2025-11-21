@@ -18,6 +18,7 @@ const META_THEME_COLORS = {
 };
 
 export const metadata: Metadata = {
+   metadataBase: new URL("https://affiliate.raikaphotography.com"), 
   title: 'Affiliate Program | Raika Photography – Refer & Earn in Bangalore',
   description:
     'Join the Raika Photography Affiliate Program. Refer clients, earn commission, and access premium marketing materials. Trusted studio for maternity, newborn, baby, and family photography in Bangalore.',
