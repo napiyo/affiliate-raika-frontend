@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -9,9 +9,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { CalendarIcon, TrendingUp, TrendingDown, Search, ChevronRight, ChevronLeft, IndianRupeeIcon, Magnet, MoreVertical } from 'lucide-react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { CalendarIcon, DollarSign, TrendingUp, TrendingDown, Search, Filter, ChevronRight, ChevronLeft, IndianRupee, IndianRupeeIcon, UserIcon, Magnet, MoreVertical } from 'lucide-react'
 import PageContainer from '@/components/layout/page-container'
-import { Role_ENUM, sampleUser, TransactionInterface, TRANSACTIONS_ENUM, TRANSACTIONS_TYPES, TransactionType, User } from '@/types/user'
+import { Role_ENUM, sampleUser, TransactionInterface, TRANSACTIONS_ENUM, TRANSACTIONS_TYPES, TransactionType, User, USER_ROLE } from '@/types/user'
 import api from '@/lib/apiService'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { endOfWeek, format, startOfWeek, subDays } from 'date-fns'
@@ -21,98 +22,83 @@ import { toast } from 'sonner'
 import { Label } from '@/components/ui/label'
 import { useAuthStore } from '@/lib/userStore'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import WalletChart from './@earningOverivew/page'
 import InfoTooltip from '@/components/ui/infoTooltip'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { AlertDialogContent } from '@/components/ui/alert-dialog'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+
+// Types
+
 
 interface EarningsData {
   date: string
   earnings: number
 }
 
+
 interface Filters {
-  search: string;
-  timeRange: string;
-  type: TransactionType | 'all'
-  customStartDate?: Date;
-  customEndDate?: Date;
+    search: string;
+    timeRange: string;
+    type:TransactionType|'all'
+    customStartDate?: Date;
+    customEndDate?: Date;
+  }
+export default function WalletTransactionsPage() {
+  
+
+
+  // State
+const params = useSearchParams();
+let id = params.get('id') || undefined;
+const searchID = params.get('leadId');
+if(!id || id == null) {
+  id = undefined;
 }
 
-export default function WalletTransactionsPage() {
-  const params = useSearchParams();
-  let id = params.get('id') || undefined;
-  const searchID = params.get('leadId');
-  if (!id || id == null) {
-    id = undefined;
-  }
+const [transactions, setTransactions] = useState<TransactionInterface[]>([])
+const [earningsData, setEarningsData] = useState<EarningsData[]>([])
+const [loading, setLoading] = useState(true)
+const [transactionsLoading, setTransactionsLoading] = useState(false)
+const [earningsLoading, setEarningsLoading] = useState(false)
+const [walletSummary, setWalletSummary] = useState<User>(sampleUser)
+const [filters, setFilters] = useState<Filters>({ 
+  search: '',
+  type:'all',
+  timeRange: 'all',
+})
+const [pagination, setPagination] = useState({
+  page: 1,
+  limit: 100,
+  total: 0,
+  totalPages: 0,
+});
+const [isSearchMode, setIsSearchMode] = useState(false); // NEW: Track if in search mode
+const {user} = useAuthStore()
 
-  const [transactions, setTransactions] = useState<TransactionInterface[]>([])
-  const [loading, setLoading] = useState(true)
-  const [transactionsLoading, setTransactionsLoading] = useState(false)
-  const [walletSummary, setWalletSummary] = useState<User>(sampleUser)
-  const [filters, setFilters] = useState<Filters>({
-    search: '',
-    type: 'all',
-    timeRange: 'all',
-  })
-  const [searchInput, setSearchInput] = useState('')
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 100,
-    total: 0,
-    totalPages: 0,
-  });
-  const { user } = useAuthStore()
+// Combined fetch function that handles both search and filters
+const fetchTransactions = async (useSearch = false) => {
+  setTransactionsLoading(true);
 
-  const searchTransaction = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    
-    if (searchInput.trim() === '') {
-      toast.error('Please enter a search term');
-      return;
-    }
-    
-    try {
-      setTransactionsLoading(true);
-      const response = await api.post(`/users/mytrasaction`, { search: searchInput.trim(), id });
-      const { data } = response.data;
-      setTransactions(data.transactions || [])
-      setPagination({
-        page: data.page,
-        limit: data.limit,
-        total: data.total,
-        totalPages: Math.ceil(data.total / data.limit)
-      })
-      setFilters(prev => ({ ...prev, search: searchInput.trim() }))
-    }
-    catch (err: any) {
-      toast.error(err.message);
-    }
-    finally {
-      setTransactionsLoading(false)
-    }
-  }
+  try {
+    const query: any = {
+      page: pagination.page,
+      limit: pagination.limit,
+      id
+    };
 
-  const fetchTransactions = async (newFilters = filters) => {
-    setTransactionsLoading(true)
-
-    try {
-      const query: any = { page: pagination.page, limit: pagination.limit, id };
-
-      if (newFilters.timeRange !== 'all') {
+    // If in search mode and search term exists
+    if (useSearch && filters.search.trim()) {
+      query.search = filters.search.trim();
+    } else {
+      // Apply time range filtering only when NOT searching
+      if (filters.timeRange !== 'all') {
         const now = new Date();
         let startDate, endDate;
 
-        switch (newFilters.timeRange) {
+        switch (filters.timeRange) {
           case 'today':
             startDate = new Date(now.setHours(0, 0, 0, 0));
             endDate = new Date(now.setHours(23, 59, 59, 999));
@@ -126,290 +112,339 @@ export default function WalletTransactionsPage() {
             endDate = now;
             break;
           case 'custom':
-            if (newFilters.customStartDate && newFilters.customEndDate) {
-              startDate = newFilters.customStartDate;
-              endDate = newFilters.customEndDate;
+            if (filters.customStartDate && filters.customEndDate) {
+              startDate = filters.customStartDate;
+              endDate = filters.customEndDate;
             }
             break;
         }
+        
         if (startDate && endDate) {
           query.from = startDate.getTime();
-          query.to = endDate.getTime()
+          query.to = endDate.getTime();
         }
       }
-      if (newFilters.type && newFilters.type !== 'all') {
-        query.type = newFilters.type
+
+      // Apply type filter only when NOT searching
+      if (filters.type && filters.type !== 'all') {
+        query.type = filters.type;
       }
-
-      const response = await api.post(`/users/mytrasaction`, query);
-      setTransactions(response.data.data.transactions || [])
-      const { data } = response.data;
-      setPagination({
-        page: data.page,
-        limit: data.limit,
-        total: data.total,
-        totalPages: Math.ceil(data.total / data.limit)
-      })
-
-    } catch (error) {
-      toast.error('Failed to fetch transactions')
-    } finally {
-      setTransactionsLoading(false)
     }
+
+    const response = await api.post(`/users/mytrasaction`, query);
+    const {data} = response.data;
+    
+    setTransactions(data.transactions || []);
+    setPagination((prev) => ({
+      page: data.page,
+      limit: data.limit,
+      total: data.total,
+      totalPages: Math.ceil(data.total / data.limit)
+    }));
+
+  } catch (error: any) {
+    toast.error(error?.message || 'Failed to fetch transactions');
+  } finally {
+    setTransactionsLoading(false);
   }
+};
 
-  const fetchWallet = async () => {
-    try {
-      let url: string = "/users/wallet";
-
-      if (id && id != null) {
-        url += '?id=' + id
-      }
-      const res = await api.get(url);
-      setWalletSummary(res.data.data);
-    }
-    catch (err: any) {
-      toast.error(err.message);
-    }
+// Handle search button click
+const handleSearch = async () => {
+  if (!filters.search.trim()) {
+    setIsSearchMode(false);
+    return;
   }
+  
+  setIsSearchMode(true);
+  setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1
+  await fetchTransactions(true);
+};
 
-  useEffect(() => {
-    fetchWallet()
+// Fetch wallet summary
+const fetchWallet = async () => {
+  try {
+    let url: string = "/users/wallet";
+    if (id && id != null) {  
+      url += '?id=' + id;
+    }
+    const res = await api.get(url);
+    setWalletSummary(res.data.data);
+  } catch (err: any) {
+    toast.error(err?.message || 'Failed to fetch wallet');
+  }
+};
+
+// Initial load
+useEffect(() => {
+  const loadInitialData = async () => {
+    setLoading(true);
+    await fetchWallet();
+    
+    // Handle search from URL param
     if (searchID) {
-      setSearchInput(searchID.trim())
-      setFilters(prev => ({ ...prev, search: searchID.trim() }))
+      setFilters((prev) => ({ ...prev, search: searchID.trim() }));
+      setIsSearchMode(true);
+      await fetchTransactions(true);
+    } else {
+      await fetchTransactions(false);
     }
-  }, [])
+    
+    setLoading(false);
+  };
+  
+  loadInitialData();
+}, []); // Only run once on mount
 
-  useEffect(() => {
-    const loadInitialData = async () => {
-      setLoading(true);
-      await fetchTransactions()
-      setLoading(false)
+// Handle filter changes (only when NOT in search mode)
+useEffect(() => {
+  if (isSearchMode) return; // Don't apply filters during search
+  
+  if (filters.timeRange === 'custom') {
+    if (!filters.customStartDate || !filters.customEndDate) {
+      return; // Wait for both dates
     }
-    if (filters.timeRange === 'custom') {
-      if (!filters.customStartDate || !filters.customEndDate) {
-        return;
-      }
-    }
-    loadInitialData()
-  }, [filters.type, filters.timeRange, filters.customEndDate, filters.customStartDate, pagination.page, pagination.limit])
-
-  useEffect(() => {
-    if (searchID && !filters.search) {
-      searchTransaction();
-    }
-  }, [searchID])
-
-  const clearSearch = () => {
-    setSearchInput('')
-    setFilters(prev => ({ ...prev, search: '' }))
-    fetchTransactions({ ...filters, search: '' })
   }
+  
+  fetchTransactions(false);
+}, [filters.type, filters.timeRange, filters.customEndDate, filters.customStartDate, pagination.page, pagination.limit, isSearchMode]);
 
+// Handle search input clearing
+useEffect(() => {
+  if (!filters.search || filters.search.trim() === '') {
+    if (isSearchMode) {
+      // Search was cleared, exit search mode and reload with filters
+      setIsSearchMode(false);
+      setPagination(prev => ({ ...prev, page: 1 }));
+      fetchTransactions(false);
+    }
+  }
+}, [filters.search]);
+
+// Update the handleTimeRangeFilter function
+const handleTimeRangeFilter = (timeRange: string) => {
+  setIsSearchMode(false); // Exit search mode when applying filters
+  setFilters(prev => ({ ...prev, timeRange, search: '' })); // Clear search
+  setPagination(prev => ({ ...prev, page: 1 }));
+};
+
+// Update type filter handler
+const handleTypeFilter = (value: 'all' | TransactionType) => {
+  setIsSearchMode(false); // Exit search mode when applying filters
+  setFilters(prev => ({ ...prev, type: value, search: '' })); // Clear search
+  setPagination(prev => ({ ...prev, page: 1 }));
+};
   if (loading) {
     return <LoadingSkeleton />
   }
 
-  const handleTimeRangeFilter = (timeRange: string) => {
-    setFilters(prev => ({ ...prev, timeRange }));
-  };
-
   return (
     <PageContainer>
-      <div className="w-full max-w-full min-w-0 space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Wallet & Transactions</h1>
-            <p className="text-muted-foreground">Manage your finances and track transactions</p>
-          </div>
+    <div className="w-full max-w-full min-w-0 space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Wallet & Transactions</h1>
+          <p className="text-muted-foreground">Manage your finances and track transactions</p>
         </div>
+        {/* <Button onClick={() => cache.clear()} variant="outline">
+          Clear Cache
+        </Button> */}
+      </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full min-w-0">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Current Balance</CardTitle>
-              <IndianRupeeIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{walletSummary.balance.toFixed(2)}₹</div>
-              <Separator className='my-1' />
-              <div className='flex justify-between'>
-                <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
-                  {walletSummary.points.toFixed(2)} <Badge className='text-xs'>Points</Badge>
-                </div>
-                <InfoTooltip message='Points can not be encashed' />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-              <TrendingUp className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {walletSummary.lifetimeEarnings.toFixed(2)}₹
-              </div>
-              <Separator className='my-1' />
-              <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
-                {walletSummary.lifetimePointsEarnings.toFixed(2)} <Badge className='text-xs'>Points</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Payout</CardTitle>
-              <TrendingDown className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {walletSummary.lifetimeWithdrawn.toFixed(2)}₹
-              </div>
-              <Separator className='my-1' />
-              <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
-                {walletSummary.lifetimePointsWithdrawn.toFixed(2)} <Badge className='text-xs'>Points</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Leads Converted</CardTitle>
-              <Magnet className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{walletSummary.totalLeadsConv}</div>
-              <Separator className='my-2' />
-              <p className="text-xs text-muted-foreground">{walletSummary.totalLeads} Total leads</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {id &&
-          <Alert>
-            <AlertTitle>
-              <Link href={`/dashboard/admin/users/${id}`}>
-                showing result for user : <span className='underline'>{id}</span>
-              </Link>
-            </AlertTitle>
-          </Alert>
-        }
-
-        <Alert>
-          <AlertDescription>
-            {"We do settlement on every friday, still if you want to withdraw your funds, you can reach out to us raikaphotography@gmail.com"}
-          </AlertDescription>
-        </Alert>
-
-        <div className='w-full max-w-full'>
-          <WalletChart id={id} />
-        </div>
-
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full min-w-0">
         <Card>
-          <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>View and filter your transaction history</CardDescription>
-
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full max-w-full min-w-0 items-center justify-between">
-              <form onSubmit={searchTransaction} className="relative flex-1/3 flex flex-row gap-4 items-center">
-                <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  placeholder="Search transactions..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-10"
-                />
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={!searchInput.trim() || transactionsLoading}
-                >
-                  {transactionsLoading ? <Spinner /> : <Search className="h-4 w-4" />}
-                </Button>
-                {filters.search && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={clearSearch}
-                  >
-                    Clear
-                  </Button>
-                )}
-              </form>
-              <div className='flex flex-row gap-4 items-center justify-end flex-wrap'>
-                <Select value={filters.type} onValueChange={(value: 'all' | TransactionType) => setFilters((prev) => ({ ...prev, type: value }))}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    {TRANSACTIONS_TYPES.map((val, idx) => <SelectItem key={`${val}-${idx}-ttable`} value={val}>{val}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-
-                <div>
-                  <Select value={filters.timeRange} onValueChange={handleTimeRangeFilter}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Time</SelectItem>
-                      <SelectItem value="today">Today</SelectItem>
-                      <SelectItem value="week">This Week</SelectItem>
-                      <SelectItem value="month">Last 30 Days</SelectItem>
-                      <SelectItem value="custom">Custom Range</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {filters.timeRange === 'custom' && (
-                  <div>
-                    <div className="flex gap-2 mt-1">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <CalendarIcon className="h-4 w-4" />
-                            {filters.customStartDate && filters.customEndDate ? (
-                              <>
-                                {format(filters.customStartDate, "MMM d, yyyy")} –{" "}
-                                {format(filters.customEndDate, "MMM d, yyyy")}
-                              </>
-                            ) : filters.customStartDate ? (
-                              format(filters.customStartDate, "MMM d, yyyy")
-                            ) : (
-                              <span className="text-muted-foreground">Pick a date range</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="range"
-                            selected={{ from: filters.customStartDate, to: filters.customEndDate }}
-                            disabled={(date) => date > new Date()}
-                            onSelect={(range) => {
-                              setFilters(prev => ({
-                                ...prev,
-                                customStartDate: range?.from,
-                                customEndDate: range?.to,
-                              }));
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Curent Balance</CardTitle>
+            <IndianRupeeIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
+            <div className="text-2xl font-bold">{walletSummary.balance.toFixed(2)}₹</div>
+            <Separator className='my-1'/>
+            <div className='flex justify-between'>
+
+            <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
+              {walletSummary.points.toFixed(2)} <Badge className='text-xs'>Points</Badge>
+            </div>
+            <InfoTooltip message='Points can not be encashed'/>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
+            <TrendingUp className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {walletSummary.lifetimeEarnings.toFixed(2)}₹
+            </div>
+            <Separator className='my-1'/>
+            <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
+              {walletSummary.lifetimePointsEarnings.toFixed(2)} <Badge className='text-xs'>Points</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Payout</CardTitle>
+            <TrendingDown className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              {walletSummary.lifetimeWithdrawn.toFixed(2)}₹
+            </div>
+            <Separator className='my-1'/>
+            <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
+              {walletSummary.lifetimePointsWithdrawn.toFixed(2)} <Badge className='text-xs'>Points</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Leads Converted</CardTitle>
+            <Magnet className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{walletSummary.totalLeadsConv}</div>
+            <Separator className='my-2' >
+
+            </Separator>
+
+            <p className="text-xs text-muted-foreground">{walletSummary.totalLeads} Total leads</p>
+          </CardContent>
+        </Card>
+      </div>
+
+     
+       
+
+      {/* Transactions Table */}
+      {id&&
+   
+
+<Alert >
+            <AlertTitle>  <Link href={`/dashboard/admin/users/${id}`}> showing result for user : <span className='underline'>{id}</span></Link></AlertTitle>
+            </Alert>
+    }
+  
+    <Alert >
+           <AlertDescription>{"We do settlement on every friday, still if you want to withdraw your funds, you can reach out to us raikaphotography@gmail.com"}</AlertDescription>
+          
+            </Alert>
+           
+           
+<div className='w-full max-w-full'>
+
+    <WalletChart id={id}/>
+</div>
+    
+    
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Transactions</CardTitle>
+          <CardDescription>View and filter your transaction history</CardDescription>
+          
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full max-w-full min-w-0 items-center justify-between">
+            <div className="relative flex-1/3 flex flex-row gap-4 items-center ">
+              <Search className="absolute left-3  h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search transactions..."
+                value={filters.search}
+                onChange={(e) => setFilters((prev)=>({...prev,search:e.target.value.trim()}))}
+                className="pl-10"
+                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
+     <Button  size="sm"   disabled={!filters.search?.trim() || transactionsLoading} onClick={()=>handleSearch()}>
+                     {loading ? <Spinner />:
+                      <Search className="h-4 w-4" />
+                     }
+                    </Button>
+            </div>
+            <div className='flex flex-row gap-4 items-center justify-end flex-wrap'>
+                
+            
+            <Select value={filters.type} onValueChange={handleTypeFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {TRANSACTIONS_TYPES.map((val, idx)=><SelectItem key={`${val}-${idx}-ttable`} value={val}>{val}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          
+          {/* Time Range Filter */}
+          <div>
+              {/* <Label>Time Range</Label> */}
+              <Select value={filters.timeRange} onValueChange={handleTimeRangeFilter}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Time</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="week">This Week</SelectItem>
+                  <SelectItem value="month">Last 30 Days</SelectItem>
+                  <SelectItem value="custom">Custom Range</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Custom Date Range */}
+            {filters.timeRange === 'custom' && (
+              <div>
+                {/* <Label>Custom Range</Label> */}
+                <div className="flex gap-2 mt-1">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <CalendarIcon className="h-4 w-4" />
+                        {filters.customStartDate && filters.customEndDate ? (
+        <>
+          {format(filters.customStartDate, "MMM d, yyyy")} –{" "}
+          {format(filters.customEndDate, "MMM d, yyyy")}
+        </>
+      ) : filters.customStartDate ? (
+        // when only "from" is picked
+        format(filters.customStartDate, "MMM d, yyyy")
+      ) : (
+        <span className="text-muted-foreground">Pick a date range</span>
+      )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="range"
+                        selected={
+                            {from: filters.customStartDate, to: filters.customEndDate }
+                            
+                        }
+                        disabled={(date) => date > new Date()}
+                        onSelect={(range) => {
+              
+                          
+                          setFilters(prev => ({
+                            ...prev,
+                            customStartDate: range?.from,
+                            customEndDate: range?.to,
+                          }));
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            )}
+            </div>
+            </div>
+            </CardHeader>
+                  <CardContent>
             {transactionsLoading ? (
               <TransactionsTableSkeleton />
             ) : transactions?.length > 0 ? (
@@ -558,12 +593,13 @@ export default function WalletTransactionsPage() {
               </Alert>
             )}
           </CardContent>
-        </Card>
-      </div>
+      </Card>
+    </div>
     </PageContainer>
   )
 }
 
+// Loading Skeletons
 function LoadingSkeleton() {
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -629,6 +665,7 @@ function TransactionsTableSkeleton() {
   )
 }
 
+
 type TransactionCardProps = {
   transactions: any[];
   user: any;
@@ -644,7 +681,8 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
   };
 
   return (
-    <>
+   <>
+      {/* Card list */}
       <div className="flex flex-col gap-3 sm:hidden">
         {transactions.map((txn) => (
           <Card
@@ -672,6 +710,7 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
         ))}
       </div>
 
+      {/* Bottom Sheet */}
       <Sheet open={openSheet} onOpenChange={setOpenSheet}>
         <SheetContent className="p-6 space-y-4">
           {selectedTxn && (
@@ -716,7 +755,7 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                     }`}
                   >
                     {(selectedTxn.type === 'CREDIT' ||
-                      selectedTxn.type === 'LOYALITY_POINT_CREDIT'
+                    selectedTxn.type === 'LOYALITY_POINT_CREDIT'
                       ? '+'
                       : '-') + selectedTxn.amount.toFixed(2)}{' '}
                     ₹
@@ -749,9 +788,12 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                   <div className="text-muted-foreground text-xs uppercase tracking-wide">
                     Status
                   </div>
-                  <Badge variant={selectedTxn.status === 'SUCCESS' ? 'default' : 'secondary'}>
-                    {selectedTxn.status}
-                  </Badge>
+                  <div>
+                    {selectedTxn.status === 'SUCCESS' ? 'Success' : selectedTxn.status === 'FAILED' ? 'Failed' : 'Pending'}
+                    <Badge variant={selectedTxn.status === 'SUCCESS' ? 'default' : 'secondary'}>
+                          {selectedTxn.status}
+                        </Badge>
+                  </div>
                 </div>
                 {user?.role === Role_ENUM.ADMIN && (
                   <>
