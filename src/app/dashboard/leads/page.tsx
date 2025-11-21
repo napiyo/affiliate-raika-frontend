@@ -277,16 +277,15 @@ const LeadsPage = () => {
     let tempreq =  leadForm.requirements;
     try {
       let leadFromCopy = leadForm;
-      reqChip.map((val,i)=>{
-        leadForm.requirements+=" +"+val;
-      })
+      // reqChip.map((val,i)=>{
+      //   leadForm.requirements+=" +"+val;
+      // })
       const res = api.post('/leads/add',leadForm);
       toast.promise(res, {
         loading: 'Adding your data...',
         success:"Lead data Added"
       });
       await res;
-    
         setIsModalOpen(false);
         setLeadForm({
           name: '',
@@ -295,6 +294,7 @@ const LeadsPage = () => {
           alternatePhone: '',
           requirements: '',
         });
+
        
         // setLeads((prev)=>[...prev])
         // fetchLeads();
@@ -658,15 +658,15 @@ const LeadsPage = () => {
                 </Table>
                 </div> */}
                 <div className='w-full overflow-x-auto hidden md:block'>
-  <div className="min-w-[800px]">
-    <Table className="w-full">
+  <div className="min-w-[800px] overflow-auto max-w-full">
+    <Table className="w-full max-w-full overflow-auto">
       <TableHeader>
         <TableRow>
-          <TableHead className="whitespace-nowrap">Name</TableHead>
-          <TableHead className="whitespace-nowrap">Contact</TableHead>
-          <TableHead className="whitespace-nowrap">Requirement</TableHead>
-          <TableHead className="whitespace-nowrap">Status</TableHead>
-          <TableHead className="whitespace-nowrap">Last Active</TableHead>
+          <TableHead className="whitespace-nowrap min-w-0">Name</TableHead>
+          <TableHead className="whitespace-nowra min-w-0">Contact</TableHead>
+          <TableHead className="whitespace-nowrap min-w-0">Requirement</TableHead>
+          <TableHead className="whitespace-nowrap min-w-0">Status</TableHead>
+          <TableHead className="whitespace-nowrap min-w-0">Last Active</TableHead>
           <TableHead className="w-[50px]"></TableHead>
         </TableRow>
       </TableHeader>
@@ -674,12 +674,12 @@ const LeadsPage = () => {
         {leads.map((lead) => (
           <TableRow key={lead.id}>
             <TableCell className="font-medium">
-              <div className="min-w-[120px] max-w-[150px] truncate">
+              <div className="min-w-2 max-w-[150px] truncate">
                 {lead.name}
               </div>
             </TableCell>
             <TableCell>
-              <div className="min-w-[180px] max-w-[220px]">
+              <div className="min-w-2 max-w-[220px]">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm truncate">{lead.email || '-'}</span>
                   <span className="text-xs text-muted-foreground whitespace-nowrap">
@@ -689,7 +689,7 @@ const LeadsPage = () => {
               </div>
             </TableCell>
             <TableCell>
-              <div className="min-w-[200px] max-w-[300px] truncate">
+              <div className="min-w-2 max-w-[300px] truncate">
                 {lead.requirement}
               </div>
             </TableCell>
@@ -699,7 +699,7 @@ const LeadsPage = () => {
               </Badge>
             </TableCell>
             <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-              <div className="min-w-[100px]">
+              <div className="min-w-2">
                 {format(new Date(lead.createdOn), 'MMM dd, yyyy')}
               </div>
             </TableCell>
@@ -712,7 +712,7 @@ const LeadsPage = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem asChild>
-                    <Link href={`/dashboard/transactions?leadId=${lead.id}`}>
+                    <Link href={`/dashboard/wallet?leadId=${lead.id}`}>
                       View Transactions
                     </Link>
                   </DropdownMenuItem>

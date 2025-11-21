@@ -221,15 +221,7 @@ const [pagination, setPagination] = useState({
     setFilters(prev => ({ ...prev, timeRange }));
     // setPagination(prev => ({ ...prev, page: 1 }));
   };
-const searchParams = useSearchParams();
-  useEffect(() => {
-    const searchID = searchParams.get('leadId');
-    if(searchID)
-    {
-      setFilters((prev)=>({...prev,search:searchID.trim()}))
-      searchTransaction();
-    }
-  }, [searchParams]);
+
   return (
     <PageContainer>
     <div className="w-full max-w-full min-w-0 space-y-8">
