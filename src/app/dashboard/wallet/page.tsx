@@ -22,14 +22,13 @@ import { toast } from 'sonner'
 import { Label } from '@/components/ui/label'
 import { useAuthStore } from '@/lib/userStore'
 import Link from 'next/link'
-import { useParams, useSearchParams } from 'next/navigation'
+import {  useSearchParams } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import WalletChart from './@earningOverivew/page'
 import InfoTooltip from '@/components/ui/infoTooltip'
-import { AlertDialogContent } from '@/components/ui/alert-dialog'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { log } from 'console'
+
 
 // Types
 
@@ -79,8 +78,7 @@ const {user} = useAuthStore()
 // Combined fetch function that handles both search and filters
 const fetchTransactions = async (useSearch = false) => {
   setTransactionsLoading(true);
-  console.log("80 ",useSearch);
-  console.log("80 ",filters);
+
   
   try {
     const query: any = {
@@ -131,7 +129,7 @@ const fetchTransactions = async (useSearch = false) => {
         query.type = filters.type;
       }
     }
- console.log("132", query);
+
  
     const response = await api.post(`/users/mytrasaction`, query);
     const {data} = response.data;
@@ -187,10 +185,10 @@ useEffect(() => {
     // Handle search from URL param
     if (searchID && searchID.trim()) {
       setIsSearchMode(true);
-      console.log("184",filters);
+    
       
       setFilters((prev) => ({ ...prev, search: searchID.trim() }));
-      console.log("185",filters);
+
 
       setLoading(false);
       // Use setTimeout to ensure state is updated before fetching
@@ -225,7 +223,7 @@ useEffect(() => {
   {
     return
   }
-  console.log("215");
+
   
   fetchTransactions(false);
 }, [filters.type, filters.timeRange, filters.customEndDate, filters.customStartDate, pagination.page, pagination.limit]);
@@ -240,7 +238,7 @@ useEffect(() => {
       fetchTransactions(false);
     }
   }
-  console.log("232");
+
   
 }, [filters.search]);
 
