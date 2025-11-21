@@ -180,6 +180,7 @@ const fetchWallet = async () => {
 // Initial load
 useEffect(() => {
   const loadInitialData = async () => {
+    try {
     setLoading(true);
     await fetchWallet();
     
@@ -200,6 +201,9 @@ useEffect(() => {
       await fetchTransactions(false);
       setLoading(false);
     }
+     } finally{
+      setinitialLoaded(true);
+    }
   };
   
   loadInitialData();
@@ -208,11 +212,18 @@ useEffect(() => {
 
 // Handle filter changes (only when NOT in search mode)
 useEffect(() => {
-  
+  if(!initialLoaded) 
+  {
+    return
+  }
   if (filters.timeRange === 'custom') {
     if (!filters.customStartDate || !filters.customEndDate) {
       return; // Wait for both dates
     }
+  }
+  if(!initialLoaded) 
+  {
+    return
   }
   console.log("215");
   
