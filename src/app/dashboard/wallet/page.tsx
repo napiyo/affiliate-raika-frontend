@@ -47,11 +47,7 @@ interface Filters {
     customEndDate?: Date;
   }
 export default function WalletTransactionsPage() {
-  
-
-
-  // State
-const params = useSearchParams();
+  const params = useSearchParams();
 let id = params.get('id') || undefined;
 const searchID = params.get('leadId');
 if(!id || id == null) {
@@ -92,7 +88,8 @@ const fetchTransactions = async (useSearch = false) => {
     // If in search mode and search term exists
     if (useSearch && filters.search.trim()) {
       query.search = filters.search.trim();
-    } else {
+      // Don't add other filters during search
+    } else if (!useSearch) {
       // Apply time range filtering only when NOT searching
       if (filters.timeRange !== 'all') {
         const now = new Date();
@@ -182,15 +179,18 @@ useEffect(() => {
     await fetchWallet();
     
     // Handle search from URL param
-    if (searchID) {
-      setFilters((prev) => ({ ...prev, search: searchID.trim() }));
+    if (searchID && searchID.trim()) {
       setIsSearchMode(true);
-      await fetchTransactions(true);
+      setFilters((prev) => ({ ...prev, search: searchID.trim() }));
+      // Use setTimeout to ensure state is updated before fetching
+      setTimeout(async () => {
+        await fetchTransactions(true);
+        setLoading(false);
+      }, 0);
     } else {
       await fetchTransactions(false);
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
   
   loadInitialData();
