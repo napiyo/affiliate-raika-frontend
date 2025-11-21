@@ -192,10 +192,10 @@ useEffect(() => {
       setFilters((prev) => ({ ...prev, search: searchID.trim() }));
       console.log("185",filters);
 
+      setLoading(false);
       // Use setTimeout to ensure state is updated before fetching
       // setTimeout(async () => {
       //   await fetchTransactions(true);
-      //   setLoading(false);
       // }, 0);
     } else {
       await fetchTransactions(false);
