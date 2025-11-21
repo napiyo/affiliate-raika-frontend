@@ -18,9 +18,55 @@ const META_THEME_COLORS = {
 };
 
 export const metadata: Metadata = {
-  title: 'Raika photography',
-  description: 'Affiliate Raika photography'
+  title: 'Affiliate Program | Raika Photography – Refer & Earn in Bangalore',
+  description:
+    'Join the Raika Photography Affiliate Program. Refer clients, earn commission, and access premium marketing materials. Trusted studio for maternity, newborn, baby, and family photography in Bangalore.',
+  
+  icons: {
+    icon: '/raika-logo.png',
+  },
+
+  keywords: [
+    'Raika Photography affiliate',
+    'refer and earn photography',
+    'photography affiliate program',
+    'baby photoshoot Bangalore',
+    'maternity photoshoot Bangalore',
+    'newborn photographer Bangalore',
+    'family photography Bangalore',
+    'best photography studio in Bangalore',
+    'Jayanagar photography studio',
+    'professional photographers near me',
+    'marketing materials',
+    'brand assets',
+    'promotional content',
+    'affiliate earnings',
+  ],
+
+  openGraph: {
+    title: 'Affiliate Program | Raika Photography – Refer & Earn',
+    description:
+      'Earn commissions by referring clients to Raika Photography. Access marketing materials for maternity, newborn, baby, and family shoots. Join the top-rated photography affiliate program in Bangalore.',
+    url: 'https://affiliate.raikaphotography.com', // optional, add if available
+    siteName: 'Raika Photography',
+    type: 'website',
+    images: ['/raika-logo.png'], // add OG image if available
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Raika Photography Affiliate Program – Refer & Earn',
+    description:
+      'Promote Raika Photography and earn commissions. Access affiliate resources and marketing materials.',
+    images: ['/raika-logo.png'], // use large card image
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
+
 
 export const viewport: Viewport = {
   themeColor: META_THEME_COLORS.light

@@ -29,6 +29,7 @@ import InfoTooltip from '@/components/ui/infoTooltip'
 import { AlertDialogContent } from '@/components/ui/alert-dialog'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { log } from 'console'
 
 // Types
 
@@ -60,6 +61,7 @@ const [loading, setLoading] = useState(true)
 const [transactionsLoading, setTransactionsLoading] = useState(false)
 const [earningsLoading, setEarningsLoading] = useState(false)
 const [walletSummary, setWalletSummary] = useState<User>(sampleUser)
+const [initialLoaded, setinitialLoaded] = useState(false)
 const [filters, setFilters] = useState<Filters>({ 
   search: '',
   type:'all',
@@ -190,10 +192,10 @@ useEffect(() => {
       console.log("185",filters);
 
       // Use setTimeout to ensure state is updated before fetching
-      setTimeout(async () => {
-        await fetchTransactions(true);
-        setLoading(false);
-      }, 0);
+      // setTimeout(async () => {
+      //   await fetchTransactions(true);
+      //   setLoading(false);
+      // }, 0);
     } else {
       await fetchTransactions(false);
       setLoading(false);
@@ -206,16 +208,16 @@ useEffect(() => {
 
 // Handle filter changes (only when NOT in search mode)
 useEffect(() => {
-  if (isSearchMode) return; // Don't apply filters during search
   
   if (filters.timeRange === 'custom') {
     if (!filters.customStartDate || !filters.customEndDate) {
       return; // Wait for both dates
     }
   }
+  console.log("215");
   
   fetchTransactions(false);
-}, [filters.type, filters.timeRange, filters.customEndDate, filters.customStartDate, pagination.page, pagination.limit, isSearchMode]);
+}, [filters.type, filters.timeRange, filters.customEndDate, filters.customStartDate, pagination.page, pagination.limit]);
 
 // Handle search input clearing
 useEffect(() => {
@@ -227,6 +229,8 @@ useEffect(() => {
       fetchTransactions(false);
     }
   }
+  console.log("232");
+  
 }, [filters.search]);
 
 // Update the handleTimeRangeFilter function
