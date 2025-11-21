@@ -47,7 +47,9 @@ interface Filters {
   }
 export default function WalletTransactionsPage() {
   // State
-  let id = useSearchParams().get('id') || undefined;
+  const params = useSearchParams();
+  let id = params.get('id') || undefined;
+  const searchID = params.get('leadId');
   if(!id || id == null)
   {
     id = undefined;
@@ -181,7 +183,11 @@ const [pagination, setPagination] = useState({
   }
   useEffect(() => {
    fetchWallet()
-   
+     if(searchID)
+    {
+      setFilters((prev)=>({...prev,search:searchID.trim()}))
+      searchTransaction();
+    }
   }, [])
   
   // Initial load
