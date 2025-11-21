@@ -221,7 +221,15 @@ const [pagination, setPagination] = useState({
     setFilters(prev => ({ ...prev, timeRange }));
     // setPagination(prev => ({ ...prev, page: 1 }));
   };
-
+const searchParams = useSearchParams();
+  useEffect(() => {
+    const searchID = searchParams.get('leadId');
+    if(searchID)
+    {
+      setFilters((prev)=>({...prev,search:searchID.trim()}))
+      searchTransaction();
+    }
+  }, [searchParams]);
   return (
     <PageContainer>
     <div className="w-full max-w-full min-w-0 space-y-8">
@@ -315,6 +323,7 @@ const [pagination, setPagination] = useState({
             <AlertTitle>  <Link href={`/dashboard/admin/users/${id}`}> showing result for user : <span className='underline'>{id}</span></Link></AlertTitle>
             </Alert>
     }
+  
     <Alert >
            <AlertDescription>{"We do settlement on every friday, still if you want to withdraw your funds, you can reach out to us raikaphotography@gmail.com"}</AlertDescription>
           

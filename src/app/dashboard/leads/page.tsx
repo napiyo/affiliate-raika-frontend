@@ -34,7 +34,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { CalendarIcon, Search, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarIcon, Search, Plus, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
 import { format, subDays, startOfWeek, endOfWeek } from 'date-fns';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import PageContainer from '@/components/layout/page-container';
@@ -49,6 +49,8 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/lib/userStore';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 // Interfaces
 
@@ -352,11 +354,13 @@ const LeadsPage = () => {
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md overflow-y-auto">
+            <ScrollArea className='max-h-screen'>
             <DialogHeader>
               <DialogTitle>Refer your friend</DialogTitle>
-              <DialogDescription className='text-sm text-muted-foreground'>Share the details of someone you’d like to refer. Our sales team will get in touch with them, and if they book a shoot with us, you’ll earn a commission."</DialogDescription>
+              <DialogDescription className='text-sm text-muted-foreground'>Share the details of potential customer and earn a commission."</DialogDescription>
+            
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 overflow-auto">
               <div className="grid gap-2">
                 <Label htmlFor="name">Name *</Label>
                 <Input
@@ -395,7 +399,7 @@ const LeadsPage = () => {
                 />
               </div>
                <div className="flex flex-wrap gap-2">
-      {reqOptions.map((option) => {
+      {/* {reqOptions.map((option) => {
         const isSelected = reqChip.includes(option);
 
         return (
@@ -413,7 +417,7 @@ const LeadsPage = () => {
             {option}
           </button>
         );
-      })}
+      })} */}
     </div>
     
               <div className="grid gap-2">
@@ -433,6 +437,7 @@ const LeadsPage = () => {
                 Refer now
               </Button>
             </div>
+                </ScrollArea>
           </DialogContent>
         </Dialog>
       </div>
@@ -610,7 +615,7 @@ const LeadsPage = () => {
             {/* Mobile list */}
             <MobileList leads={leads} statusConfig={statusConfig} user={user}/>
             {/* desktop table */}
-             <div className='max-w-full overflow-x-auto hidden md:block'>
+             {/* <div className='max-w-full overflow-x-auto hidden md:block'>
                 <Table className="w-full">
                   <TableHeader>
                     <TableRow>
@@ -651,7 +656,85 @@ const LeadsPage = () => {
                     ))}
                   </TableBody>
                 </Table>
+                </div> */}
+                <div className='w-full overflow-x-auto hidden md:block'>
+  <div className="min-w-[800px]">
+    <Table className="w-full">
+      <TableHeader>
+        <TableRow>
+          <TableHead className="whitespace-nowrap">Name</TableHead>
+          <TableHead className="whitespace-nowrap">Contact</TableHead>
+          <TableHead className="whitespace-nowrap">Requirement</TableHead>
+          <TableHead className="whitespace-nowrap">Status</TableHead>
+          <TableHead className="whitespace-nowrap">Last Active</TableHead>
+          <TableHead className="w-[50px]"></TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {leads.map((lead) => (
+          <TableRow key={lead.id}>
+            <TableCell className="font-medium">
+              <div className="min-w-[120px] max-w-[150px] truncate">
+                {lead.name}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="min-w-[180px] max-w-[220px]">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm truncate">{lead.email || '-'}</span>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    {lead.phone}
+                  </span>
                 </div>
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="min-w-[200px] max-w-[300px] truncate">
+                {lead.requirement}
+              </div>
+            </TableCell>
+            <TableCell>
+              <Badge className={statusConfig[lead.status].color}>
+                {statusConfig[lead.status].label}
+              </Badge>
+            </TableCell>
+            <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+              <div className="min-w-[100px]">
+                {format(new Date(lead.createdOn), 'MMM dd, yyyy')}
+              </div>
+            </TableCell>
+            <TableCell>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link href={`/dashboard/transactions?leadId=${lead.id}`}>
+                      View Transactions
+                    </Link>
+                  </DropdownMenuItem>
+                  {(user?.role === Role_ENUM.ADMIN || user?.role === Role_ENUM.SALES) && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/admin/users/${lead.user}`}>
+                          View Created By
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+</div>
                 <div className='h-12 w-full flex justify-center items-center align-middle'>
 
                     {leads.length==0 && <Label> No Data - try to remove filters if any</Label>}
