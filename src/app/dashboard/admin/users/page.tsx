@@ -101,6 +101,11 @@ export default function AdminUsersPage() {
     {
       accessorKey: "role",
       header: "Role",
+      cell: ({ row }) => (
+        <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 capitalize">
+          {row.original.role}
+        </span>
+      ),
     },
     {
       accessorKey: "balance",
@@ -137,7 +142,7 @@ export default function AdminUsersPage() {
     // Merged Leads Column
     {
       accessorKey: "totalLeads",
-      header: "Leads (Conv / Total)",
+      header: "Leads",
       cell: ({ row }) => (
         <div className="font-medium">
           <span className="text-green-600">{row.original.totalLeadsConv}</span>
@@ -145,11 +150,6 @@ export default function AdminUsersPage() {
           <span>{row.original.totalLeads}</span>
         </div>
       )
-    },
-    {
-      accessorKey: "suspended",
-      header: "Suspended",
-      cell: ({ row }) => (row.original.suspended ? "Yes" : "No"),
     },
     {
       accessorKey: "createdAt",
@@ -337,7 +337,7 @@ export default function AdminUsersPage() {
                 <TableBody>
                   {table.getRowModel().rows?.length ? (
                     table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id}>
+                      <TableRow key={row.id} className={row.original.suspended ? "bg-red-50 hover:bg-red-100" : ""}>
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id} className="">
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
