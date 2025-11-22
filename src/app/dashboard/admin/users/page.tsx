@@ -34,6 +34,7 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { User } from "@/types/user";
 
 interface FilterType {
   sortby?: 'balance' | 'lifetimeEarnings' | 'lifetimeWithdrawn' | 'totalLeads' | 'totalLeadsConv' | 'default';
@@ -41,22 +42,7 @@ interface FilterType {
   suspended?: 'yes' | 'no' | 'all';
 }
 
-interface User {
-  _id: string;
-  email: string;
-  name: string;
-  role: string;
-  phone?: string;
-  balance: number;
-  lifetimeWithdrawn: number;
-  points: number;
-  lifetimePointsWithdrawn: number;
-  totalLeads: number;
-  totalLeadsConv: number;
-  verifiedEmail: boolean;
-  suspended: boolean;
-  createdAt: string;
-}
+
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -116,12 +102,12 @@ export default function AdminUsersPage() {
           : row.original.balance,
     },
     {
-      accessorKey: "lifetimeWithdrawn",
+      accessorKey: "lifetimeEarnings",
       header: "Earnings",
       cell: ({ row }) =>
-        typeof row.original.lifetimeWithdrawn === 'number'
-          ? `₹${row.original.lifetimeWithdrawn.toFixed(2)}`
-          : row.original.lifetimeWithdrawn,
+        typeof row.original.lifetimeEarnings === 'number'
+          ? `₹${row.original.lifetimeEarnings.toFixed(2)}`
+          : row.original.lifetimeEarnings,
     },
     {
       accessorKey: "points",
@@ -132,12 +118,12 @@ export default function AdminUsersPage() {
           : row.original.points,
     },
     {
-      accessorKey: "lifetimePointsWithdrawn",
+      accessorKey: "lifetimePointsEarnings",
       header: "L.Points",
       cell: ({ row }) =>
-        typeof row.original.lifetimePointsWithdrawn === 'number'
-          ? row.original.lifetimePointsWithdrawn.toFixed(2)
-          : row.original.lifetimePointsWithdrawn,
+        typeof row.original.lifetimePointsEarnings === 'number'
+          ? row.original.lifetimePointsEarnings.toFixed(2)
+          : row.original.lifetimePointsEarnings,
     },
     // Merged Leads Column
     {
