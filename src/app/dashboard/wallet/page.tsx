@@ -79,7 +79,7 @@ const {user} = useAuthStore()
 const fetchInProgressRef = useRef(false);
 
 // Combined fetch function
-const fetchTransactions = async (resetPage = false) => {
+const fetchTransactions = async (resetPage = false, serachId:string|null|undefined = undefined) => {
   // Prevent concurrent fetches
   if (fetchInProgressRef.current) return;
   
@@ -96,7 +96,11 @@ const fetchTransactions = async (resetPage = false) => {
     };
 
     // If in search mode and search term exists
-    if (isSearchMode && filters.search.trim()) {
+    if(serachId)
+    {
+      query.search = serachId;
+    }
+    if ((isSearchMode && filters.search.trim() )) {
       query.search = filters.search.trim();
     } else if (!isSearchMode) {
       // Apply time range filtering only when NOT searching
@@ -195,7 +199,7 @@ useEffect(() => {
       }
       
       // Single fetch on initial load
-      await fetchTransactions();
+      await fetchTransactions( false, searchID);
     } finally {
       setInitialLoaded(true);
       setLoading(false);
