@@ -446,7 +446,7 @@ const LeadsPage = () => {
     <LeadChart chartData={chartData}/>
 
       {/* Filters */}
-      <Card>
+       <Card className='@container/card min-w-0'>
         <CardContent className="pt-6">
          <div className="flex flex-col sm:flex-row justify-between gap-4 w-full min-w-0">
             {/* Search */}
@@ -567,7 +567,7 @@ const LeadsPage = () => {
       </Card>
 
       {/* Table */}
-      <Card>
+       <Card className='@container/card min-w-0'>
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <CardTitle>Referrals ({pagination.total})</CardTitle>

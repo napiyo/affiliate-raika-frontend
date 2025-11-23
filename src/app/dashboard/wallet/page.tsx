@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -47,7 +47,7 @@ interface Filters {
     customEndDate?: Date;
   }
 export default function WalletTransactionsPage() {
-  const params = useSearchParams();
+ const params = useSearchParams();
 let id = params.get('id') || undefined;
 const searchID = params.get('leadId');
 if(!id || id == null) {
@@ -61,6 +61,7 @@ const [transactionsLoading, setTransactionsLoading] = useState(false)
 const [earningsLoading, setEarningsLoading] = useState(false)
 const [walletSummary, setWalletSummary] = useState<User>(sampleUser)
 const [initialLoaded, setinitialLoaded] = useState(false)
+const [error, setError] = useState<string | null>(null)
 const [filters, setFilters] = useState<Filters>({ 
   search: '',
   type:'all',
@@ -72,36 +73,49 @@ const [pagination, setPagination] = useState({
   total: 0,
   totalPages: 0,
 });
-const [isSearchMode, setIsSearchMode] = useState(false); // NEW: Track if in search mode
+const [isSearchMode, setIsSearchMode] = useState(false);
 const {user} = useAuthStore()
+const abortControllerRef = useRef<AbortController | null>(null);
+const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
-// Combined fetch function that handles both search and filters
-const fetchTransactions = async () => {
+// Fetch transactions with proper error handling and cancellation
+const fetchTransactions = useCallback(async (
+  pageNum: number = 1,
+  filtersOverride?: Filters,
+  searchModeOverride?: boolean
+) => {
+  // Cancel previous request
+  if (abortControllerRef.current) {
+    abortControllerRef.current.abort();
+  }
+  abortControllerRef.current = new AbortController();
+
   setTransactionsLoading(true);
+  setError(null);
 
-  
   try {
     const query: any = {
-      page: pagination.page,
-      limit: pagination.limit,
+      page: pageNum,
+      limit: 100,
       id
     };
 
-    // If in search mode and search term exists
-    if (isSearchMode && filters.search.trim()) {
-      query.search = filters.search.trim();
-      setIsSearchMode(false);
-      // Don't add other filters during search
-    } else if (!isSearchMode) {
-      // Apply time range filtering only when NOT searching
-      if (filters.timeRange !== 'all') {
+    const currentSearchMode = searchModeOverride ?? isSearchMode;
+    const currentFilters = filtersOverride ?? filters;
+
+    // Build query based on mode
+    if (currentSearchMode && currentFilters.search?.trim()) {
+      query.search = currentFilters.search.trim();
+    } else if (!currentSearchMode) {
+      // Apply filters only when not searching
+      if (currentFilters.timeRange && currentFilters.timeRange !== 'all') {
         const now = new Date();
         let startDate, endDate;
 
-        switch (filters.timeRange) {
+        switch (currentFilters.timeRange) {
           case 'today':
-            startDate = new Date(now.setHours(0, 0, 0, 0));
-            endDate = new Date(now.setHours(23, 59, 59, 999));
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
             break;
           case 'week':
             startDate = startOfWeek(now);
@@ -112,9 +126,9 @@ const fetchTransactions = async () => {
             endDate = now;
             break;
           case 'custom':
-            if (filters.customStartDate && filters.customEndDate) {
-              startDate = filters.customStartDate;
-              endDate = filters.customEndDate;
+            if (currentFilters.customStartDate && currentFilters.customEndDate) {
+              startDate = new Date(currentFilters.customStartDate);
+              endDate = new Date(currentFilters.customEndDate);
             }
             break;
         }
@@ -125,143 +139,196 @@ const fetchTransactions = async () => {
         }
       }
 
-      // Apply type filter only when NOT searching
-      if (filters.type && filters.type !== 'all') {
-        query.type = filters.type;
+      if (currentFilters.type && currentFilters.type !== 'all') {
+        query.type = currentFilters.type;
       }
     }
 
- 
-    const response = await api.post(`/users/mytrasaction`, query);
-    const {data} = response.data;
-    
-    setTransactions(data.transactions || []);
-    setPagination((prev) => ({
-      page: data.page,
-      limit: data.limit,
-      total: data.total,
-      totalPages: Math.ceil(data.total / data.limit)
-    }));
+    const response = await api.post(`/users/mytrasaction`, query, {
+      signal: abortControllerRef.current.signal
+    });
 
+    const { data } = response.data;
+    if (!data) throw new Error('No data returned from API');
+
+    setTransactions(data.transactions || []);
+    setPagination({
+      page: data.page || pageNum,
+      limit: data.limit || 100,
+      total: data.total || 0,
+      totalPages: Math.ceil((data.total || 0) / (data.limit || 100))
+    });
   } catch (error: any) {
-    toast.error(error?.message || 'Failed to fetch transactions');
+    if (error.name === 'AbortError') {
+      console.log('Request cancelled');
+      return;
+    }
+    
+    const errorMsg = error?.response?.data?.message || error?.message || 'Failed to fetch transactions';
+    setError(errorMsg);
+    toast.error(errorMsg);
+    setTransactions([]);
   } finally {
     setTransactionsLoading(false);
   }
-};
+}, [isSearchMode, filters, id]);
+
+// Fetch wallet summary
+const fetchWallet = useCallback(async () => {
+  try {
+    let url = "/users/wallet";
+    if (id) {  
+      url += `?id=${id}`;
+    }
+    const res = await api.get(url);
+    if (res.data?.data) {
+      setWalletSummary(res.data.data);
+    }
+  } catch (err: any) {
+    const errorMsg = err?.response?.data?.message || err?.message || 'Failed to fetch wallet';
+    toast.error(errorMsg);
+  }
+}, [id]);
+
+// Initial load
+useEffect(() => {
+  let isMounted = true;
+
+  const loadInitialData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      await fetchWallet();
+
+      if (!isMounted) return;
+
+      if (searchID?.trim()) {
+        setFilters(prev => ({ ...prev, search: searchID.trim() }));
+        setIsSearchMode(true);
+        await fetchTransactions(1, 
+          { ...filters, search: searchID.trim() }, 
+          true
+        );
+      } else {
+        await fetchTransactions(1, filters, false);
+      }
+    } catch (err: any) {
+      console.error('Initial load error:', err);
+      if (isMounted) {
+        setError('Failed to load initial data');
+      }
+    } finally {
+      if (isMounted) {
+        setLoading(false);
+        setinitialLoaded(true);
+      }
+    }
+  };
+  
+  loadInitialData();
+
+  return () => {
+    isMounted = false;
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+  };
+}, [searchID, id]);
+
+// Handle pagination changes
+useEffect(() => {
+  if (!initialLoaded || isSearchMode || transactionsLoading) {
+    return;
+  }
+
+  fetchTransactions(pagination.page);
+}, [pagination.page, initialLoaded, isSearchMode, transactionsLoading, fetchTransactions]);
+
+// Handle filter changes
+useEffect(() => {
+  if (!initialLoaded || isSearchMode) {
+    return;
+  }
+
+  if (filters.timeRange === 'custom') {
+    if (!filters.customStartDate || !filters.customEndDate) {
+      return;
+    }
+  }
+
+  setPagination(prev => ({ ...prev, page: 1 }));
+  fetchTransactions(1);
+}, [filters.type, filters.timeRange, filters.customStartDate, filters.customEndDate, initialLoaded, isSearchMode, fetchTransactions]);
+
+// Handle search mode with debouncing
+useEffect(() => {
+  if (!initialLoaded) {
+    return;
+  }
+
+  if (searchDebounceRef.current) {
+    clearTimeout(searchDebounceRef.current);
+  }
+
+  if (!isSearchMode) {
+    if (!filters.search?.trim()) {
+      setPagination(prev => ({ ...prev, page: 1 }));
+      fetchTransactions(1, filters, false);
+    }
+    return;
+  }
+
+  // Debounce search requests
+  if (filters.search?.trim()) {
+    searchDebounceRef.current = setTimeout(() => {
+      setPagination(prev => ({ ...prev, page: 1 }));
+      fetchTransactions(1, filters, true);
+    }, 300);
+  }
+
+  return () => {
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+  };
+}, [filters.search, isSearchMode, initialLoaded, fetchTransactions, filters]);
+
+// Handle time range filter
+const handleTimeRangeFilter = useCallback((timeRange: string) => {
+  setIsSearchMode(false);
+  setFilters(prev => ({ ...prev, timeRange, search: '' }));
+  setPagination(prev => ({ ...prev, page: 1 }));
+}, []);
+
+// Handle type filter
+const handleTypeFilter = useCallback((value: 'all' | TransactionType) => {
+  setIsSearchMode(false);
+  setFilters(prev => ({ ...prev, type: value, search: '' }));
+  setPagination(prev => ({ ...prev, page: 1 }));
+}, []);
 
 // Handle search button click
-const handleSearch = async () => {
-  if (!filters.search.trim()) {
+const handleSearch = useCallback(() => {
+  if (!filters.search?.trim()) {
     setIsSearchMode(false);
     return;
   }
   
   setIsSearchMode(true);
-  setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1
-  await fetchTransactions();
-};
+}, [filters.search]);
 
-// Fetch wallet summary
-const fetchWallet = async () => {
-  try {
-    let url: string = "/users/wallet";
-    if (id && id != null) {  
-      url += '?id=' + id;
-    }
-    const res = await api.get(url);
-    setWalletSummary(res.data.data);
-  } catch (err: any) {
-    toast.error(err?.message || 'Failed to fetch wallet');
-  }
-};
-
-// Initial load
+// Cleanup on unmount
 useEffect(() => {
-  const loadInitialData = async () => {
-    try {
-    setLoading(true);
-    await fetchWallet();
-    
-    // Handle search from URL param
-    if (searchID && searchID.trim()) {
-      setIsSearchMode(true);
-    
-      
-      setFilters((prev) => ({ ...prev, search: searchID.trim() }));
-
-
-      setLoading(false);
-      // Use setTimeout to ensure state is updated before fetching
-      // setTimeout(async () => {
-      //   await fetchTransactions(true);
-      // }, 0);
-    } else {
-      await fetchTransactions();
-      setLoading(false);
+  return () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
-     } finally{
-      setinitialLoaded(true);
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
     }
   };
-  
-  loadInitialData();
-  
-}, []); // Only run once on mount
-
-// Handle filter changes (only when NOT in search mode)
-useEffect(() => {
-  if(!initialLoaded) 
-  {
-    return
-  }
-  if (filters.timeRange === 'custom') {
-    if (!filters.customStartDate || !filters.customEndDate) {
-      return; // Wait for both dates
-    }
-  }
-  if(!initialLoaded) 
-  {
-    return
-  }
-
-  
-  fetchTransactions();
-}, [filters.type, filters.timeRange, filters.customEndDate, filters.customStartDate, pagination.page, pagination.limit]);
-
-// Handle search input clearing
-useEffect(() => {
-  if (!filters.search || filters.search.trim() === '') {
-    if (isSearchMode) {
-      // Search was cleared, exit search mode and reload with filters
-      setIsSearchMode(false);
-      setPagination(prev => ({ ...prev, page: 1 }));
-      fetchTransactions();
-    }
-  }
-  else{
-    if(isSearchMode)
-    {
-      fetchTransactions()
-    }
-  }
-
-  
-}, [filters.search,isSearchMode]);
-
-// Update the handleTimeRangeFilter function
-const handleTimeRangeFilter = (timeRange: string) => {
-  setIsSearchMode(false); // Exit search mode when applying filters
-  setFilters(prev => ({ ...prev, timeRange, search: '' })); // Clear search
-  setPagination(prev => ({ ...prev, page: 1 }));
-};
-
-// Update type filter handler
-const handleTypeFilter = (value: 'all' | TransactionType) => {
-  setIsSearchMode(false); // Exit search mode when applying filters
-  setFilters(prev => ({ ...prev, type: value, search: '' })); // Clear search
-  setPagination(prev => ({ ...prev, page: 1 }));
-};
+}, []);
   if (loading) {
     return <LoadingSkeleton />
   }
@@ -282,7 +349,40 @@ const handleTypeFilter = (value: 'all' | TransactionType) => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full min-w-0">
-        <Card>
+       
+
+         <Card className='@container/card min-w-0'>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
+            <TrendingUp className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {walletSummary.lifetimeEarnings.toFixed(2)}₹
+            </div>
+            <Separator className='my-1'/>
+            <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
+              {walletSummary.lifetimePointsEarnings.toFixed(2)} <Badge className='text-xs'>Points</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+         <Card className='@container/card min-w-0'>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Payout</CardTitle>
+            <TrendingDown className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              {walletSummary.lifetimeWithdrawn.toFixed(2)}₹
+            </div>
+            <Separator className='my-1'/>
+            <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
+              {walletSummary.lifetimePointsWithdrawn.toFixed(2)} <Badge className='text-xs'>Points</Badge>
+            </div>
+          </CardContent>
+        </Card>
+          <Card className='@container/card min-w-0'>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Curent Balance</CardTitle>
             <IndianRupeeIcon className="h-4 w-4 text-muted-foreground" />
@@ -300,39 +400,7 @@ const handleTypeFilter = (value: 'all' | TransactionType) => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {walletSummary.lifetimeEarnings.toFixed(2)}₹
-            </div>
-            <Separator className='my-1'/>
-            <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
-              {walletSummary.lifetimePointsEarnings.toFixed(2)} <Badge className='text-xs'>Points</Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Payout</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {walletSummary.lifetimeWithdrawn.toFixed(2)}₹
-            </div>
-            <Separator className='my-1'/>
-            <div className="text-xl font-bold text-accent-foreground flex items-center gap-2">
-              {walletSummary.lifetimePointsWithdrawn.toFixed(2)} <Badge className='text-xs'>Points</Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
+         <Card className='@container/card min-w-0'>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Leads Converted</CardTitle>
             <Magnet className="h-4 w-4 text-muted-foreground" />
@@ -372,7 +440,7 @@ const handleTypeFilter = (value: 'all' | TransactionType) => {
 </div>
     
     
-      <Card>
+       <Card className='@container/card min-w-0'>
         <CardHeader>
           <CardTitle>Recent Transactions</CardTitle>
           <CardDescription>View and filter your transaction history</CardDescription>
@@ -653,7 +721,7 @@ function LoadingSkeleton() {
         ))}
       </div>
 
-      <Card>
+       <Card className='@container/card min-w-0'>
         <CardHeader>
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-4 w-60" />
@@ -663,7 +731,7 @@ function LoadingSkeleton() {
         </CardContent>
       </Card>
 
-      <Card>
+       <Card className='@container/card min-w-0'>
         <CardHeader>
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-4 w-60" />

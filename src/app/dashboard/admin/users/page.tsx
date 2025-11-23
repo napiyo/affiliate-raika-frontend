@@ -63,7 +63,7 @@ export default function AdminUsersPage() {
       cell: ({ row }) => (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-             <span className="max-w-[200px] truncate font-medium">{row.original.email}</span>
+             <span className="max-w-[200px] truncate font-medium">{row.original.email || "-"}</span>
              {/* Verified Status Icon moved here */}
              {row.original.verifiedEmail ? (
                <CheckCircle className="h-4 w-4 text-green-600" aria-label="Verified" />

@@ -172,7 +172,7 @@ function AdminForm({
   }
 
   return (
-    <Card>
+     <Card className='@container/card min-w-0'>
       <CardHeader>
         <CardTitle>Add Material</CardTitle>
         <CardDescription>Store a Google Drive asset with a title and type.</CardDescription>
@@ -515,7 +515,7 @@ export default function MaterialsPage() {
                 addMaterial(input)
               }}
             />
-            <Card>
+             <Card className='@container/card min-w-0'>
               <CardHeader>
                 <CardTitle>Existing Materials</CardTitle>
                 <CardDescription>Manage your library (client-only demo)</CardDescription>
@@ -526,7 +526,7 @@ export default function MaterialsPage() {
             </Card>
           </div>
           <div className="grid gap-6 h-fit">
-            <Card>
+             <Card className='@container/card min-w-0'>
               <CardHeader>
                 <CardTitle>Direct Downloads</CardTitle>
                 <CardDescription>We use Drive&apos;s uc?export=download endpoint</CardDescription>

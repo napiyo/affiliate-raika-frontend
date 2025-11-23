@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { RecentSales } from '@/features/overview/components/recent-sales';
+import { RecentSalesSkeleton } from '@/features/overview/components/recent-sales-skeleton';
 import api from '@/lib/apiService';
 import { Separator } from '@radix-ui/react-dropdown-menu';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
@@ -20,6 +21,10 @@ export default function Sales() {
     load()
     
   }, [])
+  if(user)
+  {
+    return <RecentSalesSkeleton />
+  }
   
   return<div className='flex flex-1 flex-col space-y-2 min-w-0 w-full'>
 

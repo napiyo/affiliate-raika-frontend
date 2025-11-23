@@ -54,7 +54,7 @@ export default function AdminUserProfile() {
   })
   const {user:CurrentUser} = useAuthStore();
 
-  const transactionTypesAllowed = user?.role==Role_ENUM.ADMIN?TRANSACTIONS_TYPES:user?.role==Role_ENUM.SALES?TRANSACTIONS_TYPES_FOR_SALES:[]
+  const transactionTypesAllowed = user?.role==Role_ENUM.ADMIN?TRANSACTIONS_TYPES:(user?.role==Role_ENUM.SALES?TRANSACTIONS_TYPES_FOR_SALES:[])
   const [newTransactionLoading, setNewTransactionLoading] = useState(false);
   const handleAddTransaction = async()=>{
     try{
@@ -156,7 +156,7 @@ export default function AdminUserProfile() {
         </div>
 
         {/* User Info Header Card */}
-        <Card>
+         <Card className='@container/card min-w-0'>
           <CardHeader>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
@@ -332,7 +332,7 @@ export default function AdminUserProfile() {
             
              {/* Actions */}
 
-             <Card>
+              <Card className='@container/card min-w-0'>
               <CardHeader>
                 <CardTitle>Actions</CardTitle>
               </CardHeader>
@@ -367,11 +367,14 @@ export default function AdminUserProfile() {
                   // }}
                 /> */}
               </div>
-                <Card>
+                 <Card className='@container/card min-w-0'>
                   <CardContent className="px-4">
                     <p className="font-medium">{user.name}</p>
                     <p className="text-lg font-bold text-green-600">
                       Current Balance: ₹{user.balance.toLocaleString()}
+                    </p>
+                    <p className="text-sm font-bold text-green-600">
+                      Current Balance: ₹{user.points.toLocaleString()}
                     </p>
                   </CardContent>
                 </Card>
@@ -487,7 +490,7 @@ export default function AdminUserProfile() {
               </CardContent>
             </Card>
   {/* points Statistics */}
-  <Card>
+   <Card className='@container/card min-w-0'>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Award className="h-5 w-5" />
@@ -524,7 +527,7 @@ export default function AdminUserProfile() {
               </CardContent>
             </Card>
             {/* Performance Statistics */}
-            <Card>
+             <Card className='@container/card min-w-0'>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
