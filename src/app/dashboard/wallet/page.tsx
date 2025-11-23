@@ -76,7 +76,7 @@ const [isSearchMode, setIsSearchMode] = useState(false); // NEW: Track if in sea
 const {user} = useAuthStore()
 
 // Combined fetch function that handles both search and filters
-const fetchTransactions = async (useSearch = false) => {
+const fetchTransactions = async () => {
   setTransactionsLoading(true);
 
   
@@ -88,10 +88,11 @@ const fetchTransactions = async (useSearch = false) => {
     };
 
     // If in search mode and search term exists
-    if (useSearch && filters.search.trim()) {
+    if (isSearchMode && filters.search.trim()) {
       query.search = filters.search.trim();
+      setIsSearchMode(false);
       // Don't add other filters during search
-    } else if (!useSearch) {
+    } else if (!isSearchMode) {
       // Apply time range filtering only when NOT searching
       if (filters.timeRange !== 'all') {
         const now = new Date();
@@ -158,7 +159,7 @@ const handleSearch = async () => {
   
   setIsSearchMode(true);
   setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1
-  await fetchTransactions(true);
+  await fetchTransactions();
 };
 
 // Fetch wallet summary
@@ -196,7 +197,7 @@ useEffect(() => {
       //   await fetchTransactions(true);
       // }, 0);
     } else {
-      await fetchTransactions(false);
+      await fetchTransactions();
       setLoading(false);
     }
      } finally{
@@ -225,7 +226,7 @@ useEffect(() => {
   }
 
   
-  fetchTransactions(false);
+  fetchTransactions();
 }, [filters.type, filters.timeRange, filters.customEndDate, filters.customStartDate, pagination.page, pagination.limit]);
 
 // Handle search input clearing
@@ -235,12 +236,18 @@ useEffect(() => {
       // Search was cleared, exit search mode and reload with filters
       setIsSearchMode(false);
       setPagination(prev => ({ ...prev, page: 1 }));
-      fetchTransactions(false);
+      fetchTransactions();
+    }
+  }
+  else{
+    if(isSearchMode)
+    {
+      fetchTransactions()
     }
   }
 
   
-}, [filters.search]);
+}, [filters.search,isSearchMode]);
 
 // Update the handleTimeRangeFilter function
 const handleTimeRangeFilter = (timeRange: string) => {

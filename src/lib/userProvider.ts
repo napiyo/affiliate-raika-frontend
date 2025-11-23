@@ -10,7 +10,9 @@ export default function UserProvider({ children }: PropsWithChildren) {
     const { login, logout, isLoggedIn } = useAuthStore();
 
     useEffect(() => {
-      if (!isLoggedIn) return;
+      if (!isLoggedIn) {
+        logout();
+      };
   
       api.get('/auth/me', {headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
