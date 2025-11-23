@@ -11,6 +11,8 @@ export default function UserProvider({ children }: PropsWithChildren) {
 const hasFetched = useRef(false);
 
     useEffect(() => {
+      console.log("line 1444");
+      
      if (hasFetched.current) return;
     hasFetched.current = true;
       api.get('/auth/me', {headers: {
@@ -18,7 +20,7 @@ const hasFetched = useRef(false);
         'Pragma': 'no-cache',
         'Expires': '0',
       }}).then((res)=>{    
-    
+     console.log("line 23",res.data);
         if(res.data?.data)
         {
             login(res.data.data);
@@ -31,6 +33,7 @@ const hasFetched = useRef(false);
         logout()
           toast.error(error.message);
       });
+      console.log("line 36");
     }, []);
   
 
