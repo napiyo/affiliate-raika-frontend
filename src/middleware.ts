@@ -20,7 +20,6 @@ const FORBIDDEN_PATH = "/403";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const jwt = req.cookies.get("jwt")?.value;
-  console.log("middleware jwt",jwt);
   
   const isPublicPath = (path: string) => PUBLIC_PATHS.some((p) => path.startsWith(p));
   const isAdminPath = (path: string) => ADMIN_PATHS.some((p) => path.includes(p));
@@ -65,7 +64,6 @@ async function verifyJwtWithBackend(jwt: string): Promise<User> {
     cache: "no-store",
     credentials: 'include',
   });
-  console.log("res from middle", res);
   
   if (!res.ok) {
     throw new Error("Invalid JWT");
