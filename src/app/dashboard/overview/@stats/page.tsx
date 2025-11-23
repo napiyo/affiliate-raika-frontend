@@ -21,7 +21,7 @@ export default function Sales() {
     load()
     
   }, [])
-  if(user)
+  if(!user)
   {
     return <RecentSalesSkeleton />
   }
