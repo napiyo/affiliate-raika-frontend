@@ -1,19 +1,18 @@
 "use client";
 
-import { PropsWithChildren, useEffect } from "react";
+import { PropsWithChildren, useEffect, useRef } from "react";
 import { useAuthStore } from "./userStore";
 import api from "./apiService";
 import { toast } from "sonner";
 
 export default function UserProvider({ children }: PropsWithChildren) {
   
-    const { login, logout, isLoggedIn } = useAuthStore();
+    const { login, logout } = useAuthStore();
+const hasFetched = useRef(false);
 
     useEffect(() => {
-      if (!isLoggedIn) {
-        logout();
-      };
-  
+     if (hasFetched.current) return;
+    hasFetched.current = true;
       api.get('/auth/me', {headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
@@ -32,7 +31,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
         logout()
           toast.error(error.message);
       });
-    }, [isLoggedIn, login, logout]);
+    }, []);
   
 
   return (children);
