@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Phone, Lock, User, ArrowRight, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Phone, Lock, User, ArrowRight, CheckCircle, AlertCircle, Loader2, Mail } from 'lucide-react';
 import api from '@/lib/apiService';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -11,11 +11,13 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 import PageContainer from '@/components/layout/page-container';
-
+import Image from 'next/image';
+import raikaLogo from '@/app/icon.png'
 interface PhoneAuthState {
   phone: string;
   otp: string;
   name: string;
+  email?:string;
 }
 
 export default function PhoneOTPAuth() {
@@ -155,6 +157,18 @@ export default function PhoneOTPAuth() {
       setError('Name must be at least 2 characters');
       return;
     }
+   if (formData.email?.trim()) {
+    const email = formData.email.trim();
+    
+    // Regular Expression for basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+        // If the email is NOT valid according to the regex:
+        setError('Please enter a valid email address.');
+        return; // Stop execution/submission
+    }
+  }
 
     setLoading(true);
     try {
@@ -193,12 +207,13 @@ export default function PhoneOTPAuth() {
     <div className="min-h-screen w-full flex items-center justify-center p-4">
       {/* Main container */}
       <div className="w-full max-w-sm ">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 ">
+        <div className="bg-white rounded-2xl shadow-sm border border-amber-500 p-8 ">
           <div className="space-y-8 ">
             {/* Phone Input View */}
             {currentView === 'phone' && (
               <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="text-center space-y-3">
+                  <Image src={raikaLogo} alt='raika' width={120} className='m-auto'></Image>
                   <h1 className="text-3xl font-semibold text-gray-900">
                     Welcome
                   </h1>
@@ -232,7 +247,7 @@ export default function PhoneOTPAuth() {
                   <button
                     onClick={handleSendOTP}
                     disabled={loading}
-                    className="w-full py-3 rounded-lg font-medium text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-lg font-medium text-white bg-amber-500 hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-auto"
                   >
                     {loading ? (
                       <>
@@ -290,7 +305,7 @@ export default function PhoneOTPAuth() {
                   <button
                     onClick={handleVerifyOTP}
                     disabled={loading || formData.otp.length !== 6}
-                    className="w-full py-3 rounded-lg font-medium text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-lg font-medium text-white bg-amber-500 hover:bg-amber-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>
@@ -345,13 +360,24 @@ export default function PhoneOTPAuth() {
 
                 <div className="space-y-4">
                   <div className="relative">
-                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 focus-within:border-gray-900 focus-within:bg-white transition-all duration-200">
+                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 focus-within:border-gray-900 focus-within:bg-white transition-all duration-200 mb-3">
                       <User className="w-4 h-4 text-gray-400 mr-3" />
                       <input
                         type="text"
                         placeholder="Enter your full name"
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onKeyPress={(e) => handleKeyPress(e, handleCompleteProfile)}
+                        className="w-full bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-base"
+                      />
+                    </div>
+                     <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 focus-within:border-gray-900 focus-within:bg-white transition-all duration-200">
+                      <Mail className="w-4 h-4 text-gray-400 mr-3" />
+                      <input
+                        type="email"
+                        placeholder="admin@raikaphotography.com"
+                        value={formData.email || ""}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         onKeyPress={(e) => handleKeyPress(e, handleCompleteProfile)}
                         className="w-full bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-base"
                       />
@@ -374,7 +400,7 @@ export default function PhoneOTPAuth() {
                   <button
                     onClick={handleCompleteProfile}
                     disabled={loading || !formData.name.trim()}
-                    className="w-full py-3 rounded-lg font-medium text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-lg font-medium text-white bg-amber-500 hover:bg-amber-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>
