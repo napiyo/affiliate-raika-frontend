@@ -10,7 +10,7 @@ interface JwtPayload {
 }
 
 // Environment variables for configuration
-const PUBLIC_PATHS = ["/auth", "/public"];
+const PUBLIC_PATHS = ["/auth", "/public","shoot"];
 const ADMIN_PATHS = ["admin"];
 const DASHBOARD_PATH = "/dashboard";
 const LOGIN_PATH = "/auth";

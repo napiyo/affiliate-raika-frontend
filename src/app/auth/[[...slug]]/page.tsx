@@ -204,7 +204,6 @@ export default function PhoneOTPAuth() {
   };
 
   return (
-    <PageContainer >
     <div className="min-h-screen w-full flex items-center justify-center p-4">
       {/* Main container */}
       <div className="w-full max-w-sm ">
@@ -423,6 +422,6 @@ export default function PhoneOTPAuth() {
         </div>
       </div>
     </div>
-    </PageContainer>
+
   );
 }
