@@ -9,13 +9,12 @@ import { toast } from "sonner";
 export default function UserProvider({ children }: PropsWithChildren) {
   
     const { login, logout ,isLoggedIn} = useAuthStore();
-const hasFetched = useRef(false);
+
 
     useEffect(() => {
       if(!isLoggedIn)return;
       
-     if (hasFetched.current) return;
-    hasFetched.current = true;
+     
       api.get('/auth/me', {headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
@@ -36,7 +35,7 @@ const hasFetched = useRef(false);
           toast.error(error.message);
       });
   
-    }, []);
+    }, [login,logout]);
   
 
   return (children);
