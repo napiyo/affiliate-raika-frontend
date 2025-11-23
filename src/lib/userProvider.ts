@@ -4,6 +4,7 @@ import { PropsWithChildren, useEffect, useRef } from "react";
 import { useAuthStore } from "./userStore";
 import api from "./apiService";
 import { toast } from "sonner";
+import { log } from "console";
 
 export default function UserProvider({ children }: PropsWithChildren) {
   
@@ -30,6 +31,8 @@ const hasFetched = useRef(false);
         }
          
       }).catch((error)=>{
+        console.log("asdfas");
+        
         logout()
           toast.error(error.message);
       });
