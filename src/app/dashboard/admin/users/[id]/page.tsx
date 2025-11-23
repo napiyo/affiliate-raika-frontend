@@ -45,7 +45,7 @@ export default function AdminUserProfile() {
  
   reference:string,
  }>({
-    type: 'CREDIT',
+    type: 'DEBIT',
  
     amount: 0,
     comment: '',
@@ -54,7 +54,7 @@ export default function AdminUserProfile() {
   })
   const {user:CurrentUser} = useAuthStore();
 
-  const transactionTypesAllowed = user?.role==Role_ENUM.ADMIN?TRANSACTIONS_TYPES:(user?.role==Role_ENUM.SALES?TRANSACTIONS_TYPES_FOR_SALES:[])
+  const transactionTypesAllowed = CurrentUser?.role==Role_ENUM.ADMIN?TRANSACTIONS_TYPES:(CurrentUser?.role==Role_ENUM.SALES?TRANSACTIONS_TYPES_FOR_SALES:[])
   const [newTransactionLoading, setNewTransactionLoading] = useState(false);
   const handleAddTransaction = async()=>{
     try{
@@ -373,8 +373,8 @@ export default function AdminUserProfile() {
                     <p className="text-lg font-bold text-green-600">
                       Current Balance: ₹{user.balance.toLocaleString()}
                     </p>
-                    <p className="text-sm font-bold text-green-600">
-                      Current Balance: ₹{user.points.toLocaleString()}
+                    <p className="text-sm text-green-600">
+                      Current points: ₹{user.points.toLocaleString()}
                     </p>
                   </CardContent>
                 </Card>

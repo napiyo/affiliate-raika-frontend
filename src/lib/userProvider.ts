@@ -24,7 +24,9 @@ export default function UserProvider({ children }: PropsWithChildren) {
         {
             login(res.data.data);
         }
-          
+        else{
+          logout()
+        }
          
       }).catch((error)=>{
         logout()
