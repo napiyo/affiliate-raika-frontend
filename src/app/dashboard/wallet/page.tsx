@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -47,7 +47,7 @@ interface Filters {
     customEndDate?: Date;
   }
 export default function WalletTransactionsPage() {
- const params = useSearchParams();
+  const params = useSearchParams();
 let id = params.get('id') || undefined;
 const searchID = params.get('leadId');
 if(!id || id == null) {
@@ -60,8 +60,7 @@ const [loading, setLoading] = useState(true)
 const [transactionsLoading, setTransactionsLoading] = useState(false)
 const [earningsLoading, setEarningsLoading] = useState(false)
 const [walletSummary, setWalletSummary] = useState<User>(sampleUser)
-const [initialLoaded, setinitialLoaded] = useState(false)
-const [error, setError] = useState<string | null>(null)
+const [initialLoaded, setInitialLoaded] = useState(false)
 const [filters, setFilters] = useState<Filters>({ 
   search: '',
   type:'all',
@@ -75,47 +74,40 @@ const [pagination, setPagination] = useState({
 });
 const [isSearchMode, setIsSearchMode] = useState(false);
 const {user} = useAuthStore()
-const abortControllerRef = useRef<AbortController | null>(null);
-const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
-// Fetch transactions with proper error handling and cancellation
-const fetchTransactions = useCallback(async (
-  pageNum: number = 1,
-  filtersOverride?: Filters,
-  searchModeOverride?: boolean
-) => {
-  // Cancel previous request
-  if (abortControllerRef.current) {
-    abortControllerRef.current.abort();
-  }
-  abortControllerRef.current = new AbortController();
+// Use ref to prevent unnecessary fetches
+const fetchInProgressRef = useRef(false);
 
+// Combined fetch function
+const fetchTransactions = async (resetPage = false) => {
+  // Prevent concurrent fetches
+  if (fetchInProgressRef.current) return;
+  
   setTransactionsLoading(true);
-  setError(null);
+  fetchInProgressRef.current = true;
 
   try {
+    const currentPage = resetPage ? 1 : pagination.page;
+    
     const query: any = {
-      page: pageNum,
-      limit: 100,
+      page: currentPage,
+      limit: pagination.limit,
       id
     };
 
-    const currentSearchMode = searchModeOverride ?? isSearchMode;
-    const currentFilters = filtersOverride ?? filters;
-
-    // Build query based on mode
-    if (currentSearchMode && currentFilters.search?.trim()) {
-      query.search = currentFilters.search.trim();
-    } else if (!currentSearchMode) {
-      // Apply filters only when not searching
-      if (currentFilters.timeRange && currentFilters.timeRange !== 'all') {
+    // If in search mode and search term exists
+    if (isSearchMode && filters.search.trim()) {
+      query.search = filters.search.trim();
+    } else if (!isSearchMode) {
+      // Apply time range filtering only when NOT searching
+      if (filters.timeRange !== 'all') {
         const now = new Date();
         let startDate, endDate;
 
-        switch (currentFilters.timeRange) {
+        switch (filters.timeRange) {
           case 'today':
-            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            startDate = new Date(now.setHours(0, 0, 0, 0));
+            endDate = new Date(now.setHours(23, 59, 59, 999));
             break;
           case 'week':
             startDate = startOfWeek(now);
@@ -126,9 +118,9 @@ const fetchTransactions = useCallback(async (
             endDate = now;
             break;
           case 'custom':
-            if (currentFilters.customStartDate && currentFilters.customEndDate) {
-              startDate = new Date(currentFilters.customStartDate);
-              endDate = new Date(currentFilters.customEndDate);
+            if (filters.customStartDate && filters.customEndDate) {
+              startDate = filters.customStartDate;
+              endDate = filters.customEndDate;
             }
             break;
         }
@@ -139,196 +131,131 @@ const fetchTransactions = useCallback(async (
         }
       }
 
-      if (currentFilters.type && currentFilters.type !== 'all') {
-        query.type = currentFilters.type;
+      // Apply type filter only when NOT searching
+      if (filters.type && filters.type !== 'all') {
+        query.type = filters.type;
       }
     }
 
-    const response = await api.post(`/users/mytrasaction`, query, {
-      signal: abortControllerRef.current.signal
-    });
-
-    const { data } = response.data;
-    if (!data) throw new Error('No data returned from API');
-
+    const response = await api.post(`/users/mytrasaction`, query);
+    const {data} = response.data;
     setTransactions(data.transactions || []);
     setPagination({
-      page: data.page || pageNum,
-      limit: data.limit || 100,
-      total: data.total || 0,
-      totalPages: Math.ceil((data.total || 0) / (data.limit || 100))
+      page: data.page,
+      limit: data.limit,
+      total: data.total,
+      totalPages: Math.ceil(data.total / data.limit)
     });
+
   } catch (error: any) {
-    if (error.name === 'AbortError') {
-      console.log('Request cancelled');
-      return;
-    }
-    
-    const errorMsg = error?.response?.data?.message || error?.message || 'Failed to fetch transactions';
-    setError(errorMsg);
-    toast.error(errorMsg);
-    setTransactions([]);
+    toast.error(error?.message || 'Failed to fetch transactions');
   } finally {
     setTransactionsLoading(false);
+    fetchInProgressRef.current = false;
   }
-}, [isSearchMode, filters, id]);
+};
+
+// Handle search button click
+const handleSearch = async () => {
+  if (!filters.search.trim()) {
+    setIsSearchMode(false);
+    return;
+  }
+  
+  setIsSearchMode(true);
+  // Reset page and fetch in one go
+  await fetchTransactions(true);
+};
 
 // Fetch wallet summary
-const fetchWallet = useCallback(async () => {
+const fetchWallet = async () => {
   try {
-    let url = "/users/wallet";
-    if (id) {  
-      url += `?id=${id}`;
+    let url: string = "/users/wallet";
+    if (id && id != null) {  
+      url += '?id=' + id;
     }
     const res = await api.get(url);
-    if (res.data?.data) {
-      setWalletSummary(res.data.data);
-    }
+    setWalletSummary(res.data.data);
   } catch (err: any) {
-    const errorMsg = err?.response?.data?.message || err?.message || 'Failed to fetch wallet';
-    toast.error(errorMsg);
+    toast.error(err?.message || 'Failed to fetch wallet');
   }
-}, [id]);
+};
 
-// Initial load
+// Initial load - ONLY RUNS ONCE
 useEffect(() => {
-  let isMounted = true;
-
   const loadInitialData = async () => {
     try {
       setLoading(true);
-      setError(null);
-      
       await fetchWallet();
-
-      if (!isMounted) return;
-
-      if (searchID?.trim()) {
-        setFilters(prev => ({ ...prev, search: searchID.trim() }));
+      
+      // Handle search from URL param
+      if (searchID && searchID.trim()) {
+        setFilters((prev) => ({ ...prev, search: searchID.trim() }));
         setIsSearchMode(true);
-        await fetchTransactions(1, 
-          { ...filters, search: searchID.trim() }, 
-          true
-        );
-      } else {
-        await fetchTransactions(1, filters, false);
       }
-    } catch (err: any) {
-      console.error('Initial load error:', err);
-      if (isMounted) {
-        setError('Failed to load initial data');
-      }
+      
+      // Single fetch on initial load
+      await fetchTransactions();
     } finally {
-      if (isMounted) {
-        setLoading(false);
-        setinitialLoaded(true);
-      }
+      setInitialLoaded(true);
+      setLoading(false);
     }
   };
   
   loadInitialData();
+}, []); // Only run once on mount
 
-  return () => {
-    isMounted = false;
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-  };
-}, [searchID, id]);
-
-// Handle pagination changes
+// Handle filter changes - REMOVED pagination.page dependency
 useEffect(() => {
-  if (!initialLoaded || isSearchMode || transactionsLoading) {
-    return;
-  }
-
-  fetchTransactions(pagination.page);
-}, [pagination.page, initialLoaded, isSearchMode, transactionsLoading, fetchTransactions]);
-
-// Handle filter changes
-useEffect(() => {
-  if (!initialLoaded || isSearchMode) {
-    return;
-  }
-
+  if (!initialLoaded) return;
+  
+  // Don't fetch if in search mode
+  if (isSearchMode) return;
+  
+  // Wait for both custom dates
   if (filters.timeRange === 'custom') {
     if (!filters.customStartDate || !filters.customEndDate) {
       return;
     }
   }
 
-  setPagination(prev => ({ ...prev, page: 1 }));
-  fetchTransactions(1);
-}, [filters.type, filters.timeRange, filters.customStartDate, filters.customEndDate, initialLoaded, isSearchMode, fetchTransactions]);
+  fetchTransactions(true); // Reset to page 1 when filters change
+}, [filters.type, filters.timeRange, filters.customEndDate, filters.customStartDate]);
 
-// Handle search mode with debouncing
+// Separate effect for pagination changes only
 useEffect(() => {
-  if (!initialLoaded) {
-    return;
-  }
-
-  if (searchDebounceRef.current) {
-    clearTimeout(searchDebounceRef.current);
-  }
-
-  if (!isSearchMode) {
-    if (!filters.search?.trim()) {
-      setPagination(prev => ({ ...prev, page: 1 }));
-      fetchTransactions(1, filters, false);
-    }
-    return;
-  }
-
-  // Debounce search requests
-  if (filters.search?.trim()) {
-    searchDebounceRef.current = setTimeout(() => {
-      setPagination(prev => ({ ...prev, page: 1 }));
-      fetchTransactions(1, filters, true);
-    }, 300);
-  }
-
-  return () => {
-    if (searchDebounceRef.current) {
-      clearTimeout(searchDebounceRef.current);
-    }
-  };
-}, [filters.search, isSearchMode, initialLoaded, fetchTransactions, filters]);
-
-// Handle time range filter
-const handleTimeRangeFilter = useCallback((timeRange: string) => {
-  setIsSearchMode(false);
-  setFilters(prev => ({ ...prev, timeRange, search: '' }));
-  setPagination(prev => ({ ...prev, page: 1 }));
-}, []);
-
-// Handle type filter
-const handleTypeFilter = useCallback((value: 'all' | TransactionType) => {
-  setIsSearchMode(false);
-  setFilters(prev => ({ ...prev, type: value, search: '' }));
-  setPagination(prev => ({ ...prev, page: 1 }));
-}, []);
-
-// Handle search button click
-const handleSearch = useCallback(() => {
-  if (!filters.search?.trim()) {
-    setIsSearchMode(false);
-    return;
-  }
+  if (!initialLoaded) return;
   
-  setIsSearchMode(true);
+  // Only fetch if page actually changed (not initial render)
+  if (pagination.page !== 1 || pagination.limit !== 100) {
+    fetchTransactions();
+  }
+}, [pagination.page, pagination.limit]);
+
+// Handle search clearing
+useEffect(() => {
+  if (!initialLoaded) return;
+  
+  // If search is cleared and we were in search mode
+  if (!filters.search.trim() && isSearchMode) {
+    setIsSearchMode(false);
+    fetchTransactions(true); // Reload with filters
+  }
 }, [filters.search]);
 
-// Cleanup on unmount
-useEffect(() => {
-  return () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    if (searchDebounceRef.current) {
-      clearTimeout(searchDebounceRef.current);
-    }
-  };
-}, []);
+// Update the handleTimeRangeFilter function
+const handleTimeRangeFilter = (timeRange: string) => {
+  setIsSearchMode(false);
+  setFilters(prev => ({ ...prev, timeRange, search: '' }));
+  // Don't manually change pagination - the effect will handle it
+};
+
+// Update type filter handler
+const handleTypeFilter = (value: 'all' | TransactionType) => {
+  setIsSearchMode(false);
+  setFilters(prev => ({ ...prev, type: value, search: '' }));
+  // Don't manually change pagination - the effect will handle it
+};
   if (loading) {
     return <LoadingSkeleton />
   }
