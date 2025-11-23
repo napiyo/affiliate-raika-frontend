@@ -157,7 +157,7 @@ export default function PhoneOTPAuth() {
       setError('Name must be at least 2 characters');
       return;
     }
-   if (formData.email?.trim()) {
+   if (formData.email && formData.email?.trim()) {
     const email = formData.email.trim();
     
     // Regular Expression for basic email validation
@@ -175,6 +175,7 @@ export default function PhoneOTPAuth() {
       const response = await api.post('/auth/complete-profile', {
         phone: userPhone,
         name: formData.name.trim(),
+        email:formData.email?.trim()
       });
 
       login(response.data.data.user);
@@ -382,6 +383,7 @@ export default function PhoneOTPAuth() {
                         className="w-full bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-base"
                       />
                     </div>
+                    <div className='text-sm text-gray-400 mx-5'>Email is optional</div>
                   </div>
 
                   {error && (
