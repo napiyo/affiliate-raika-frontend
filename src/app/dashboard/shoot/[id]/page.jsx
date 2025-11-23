@@ -282,7 +282,7 @@ const Hero = ({ onBook }) => {
             Voted #1 Premium Maternity Studio
           </div>
           
-          <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif font-bold text-white mb-8 leading-[0.9] tracking-tight">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-8 leading-[0.9] tracking-tight">
             Don't Let These <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-500 to-yellow-700 drop-shadow-2xl">
               Moments Fade.
@@ -475,7 +475,7 @@ const Pricing = ({ onBook }) => {
         </div>
 
         {/* Pricing Cards - Designed to sell the middle/high tier */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-16 items-end">
+        <div className="flex flex-wrap justify-center  gap-4 mb-16 items-center">
           {PACKAGES_DATA[activeTab].tiers.map((pkg, idx) => {
              const isCheap = idx === 0;
              const isPremium = pkg.popular || pkg.name.includes("Gold") || pkg.name.includes("Platinum") || pkg.name.includes("Royal");

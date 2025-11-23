@@ -301,7 +301,6 @@ export default function AdminUsersPage() {
 
           {/* TanStack Table */}
           <div className="w-full overflow-x-auto min-w-0">
-             <ScrollArea className='h-full w-full'>
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -343,7 +342,7 @@ export default function AdminUsersPage() {
             </div>
             {/* Added scroll bar to fix horizontal scrolling */}
             <ScrollBar orientation="horizontal" /> 
-            </ScrollArea>
+          
           </div>
 
           {/* Pagination */}
