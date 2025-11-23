@@ -8,11 +8,11 @@ import { log } from "console";
 
 export default function UserProvider({ children }: PropsWithChildren) {
   
-    const { login, logout } = useAuthStore();
+    const { login, logout ,isLoggedIn} = useAuthStore();
 const hasFetched = useRef(false);
 
     useEffect(() => {
-      console.log("line 1444");
+      if(!isLoggedIn)return;
       
      if (hasFetched.current) return;
     hasFetched.current = true;
