@@ -1,495 +1,400 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ArrowLeft, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Phone, Lock, User, ArrowRight, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import api from '@/lib/apiService';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/userStore';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
+import PageContainer from '@/components/layout/page-container';
 
-
-
-interface LoginForm {
-  email: string;
-  password: string;
-}
-
-interface SignupForm {
-  name: string;
-  email: string;
-  password: string;
+interface PhoneAuthState {
   phone: string;
+  otp: string;
+  name: string;
 }
 
-
-
-
-export default  function AuthContainer() {
+export default function PhoneOTPAuth() {
   const router = useRouter();
-  const [currentView, setCurrentView] = useState<'login' | 'signup' | 'forgot' | 'verification'>('login');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
-  const [success, setSuccess] = useState<string>('');
-  const [userEmail, setUserEmail] = useState<string>('');
+  const { login } = useAuthStore();
+  
+  const [currentView, setCurrentView] = useState<'phone' | 'otp' | 'details'>('phone');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [formData, setFormData] = useState<PhoneAuthState>({ phone: '', otp: '', name: '' });
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [userPhone, setUserPhone] = useState('');
 
-  // Form states
-  const [loginForm, setLoginForm] = useState<LoginForm>({ email: '', password: '' });
-  const [signupForm, setSignupForm] = useState<SignupForm>({ 
-    name: '', email: '', password: '', phone: '' 
-  });
-  const [forgotEmail, setForgotEmail] = useState<string>('');
-  const {login} = useAuthStore(); 
-  // Clear messages when view changes
+  // OTP Timer
+  useEffect(() => {
+    if (otpTimer > 0) {
+      const timer = setTimeout(() => setOtpTimer(otpTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [otpTimer]);
+
+  // Clear messages on view change
   useEffect(() => {
     setError('');
     setSuccess('');
-    setShowPassword(false);
   }, [currentView]);
 
-  const clearMessages = () => {
-    setError('');
-    setSuccess('');
+  const cleanPhoneNumber = (phone: string) => {
+    let cleaned = phone.replace(/\s+/g, '');
+    
+    if (cleaned.startsWith('+91')) cleaned = cleaned.slice(3);
+    else if (cleaned.startsWith('091')) cleaned = cleaned.slice(3);
+    else if (cleaned.startsWith('91')) cleaned = cleaned.slice(2);
+    else if (cleaned.startsWith('0')) cleaned = cleaned.slice(1);
+    
+    return cleaned;
   };
 
-  const handleLogin = async () => {
-    clearMessages();
-    
-    if (!loginForm.email || !loginForm.password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    setLoading(true);
-      await api.post('/auth/login',loginForm).then((res)=>{
-        login(res.data.data)
-        toast.success("welcome");        
-        setSuccess('Login successful! Redirecting...');
-      router.push("/");
-   }).catch((error)=>{
-    setError(error.data?error.data.message:error.message);
-   });
-   setLoading(false);
-  }
-
-  const handleSignup = async () => {
-    clearMessages();
-    
-    const { name, email, password, phone } = signupForm;
-    if (!name || !email || !password || !phone) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long');
-      return;
-    }
-
+  const validatePhone = (phone: string) => {
     const allowedChars = /^[0-9+\s]+$/;
     if (!allowedChars.test(phone)) {
-      setError('Invalid mobile number');
-      return;
+      setError('Invalid phone number format');
+      return false;
     }
-  
-    // Remove spaces
-    let cleaned = phone.replace(/\s+/g, "");
-  
-    // Handle country/leading prefixes
-    if (cleaned.startsWith("+91")) {
-      cleaned = cleaned.slice(3);
-    }
-    else if (cleaned.startsWith("091")) {
-      cleaned = cleaned.slice(3);
-    } else if (cleaned.startsWith("91")) {
-      cleaned = cleaned.slice(2);
-    } else if (cleaned.startsWith("0")) {
-      cleaned = cleaned.slice(1);
-    }
-   
-    if(cleaned.length != 10)
-    {
-      setError('Phone number is not valid ');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await api.post("/auth/register",{name:signupForm.name,email:signupForm.email,password:signupForm.password,phone:signupForm.phone})
-      setUserEmail(email);
-      setCurrentView('verification');
-      setSuccess('Verification email sent successfully!');
-    } catch (err:any) {
-      setError(err.data?err.data.message:err.message);
-    }
-    setLoading(false);
-  };
-
-  const handleForgotPassword = async () => {
-    clearMessages();
     
-    if (!forgotEmail) {
-      setError('Please enter your email address');
+    const cleaned = cleanPhoneNumber(phone);
+    if (cleaned.length !== 10) {
+      setError('Phone number must be 10 digits');
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleSendOTP = async () => {
+    setError('');
+    setSuccess('');
+
+    if (!formData.phone.trim()) {
+      setError('Please enter your phone number');
+      return;
+    }
+
+    if (!validatePhone(formData.phone)) {
       return;
     }
 
     setLoading(true);
     try {
-      await api.post('/auth/forgotpassword',{email:forgotEmail});
-      setSuccess('Password reset email sent successfully!');
-    } catch (err:any) {
-      setError(err.data?err.data.message:err.message);
+      const cleanedPhone = cleanPhoneNumber(formData.phone);
+      await api.post('/auth/send-otp', { phone: cleanedPhone });
+      setUserPhone(cleanedPhone);
+      setCurrentView('otp');
+      setOtpTimer(60);
+      setSuccess('OTP sent successfully!');
+      toast.success('OTP sent to your phone');
+    } catch (err: any) {
+      const errorMsg = err.data?.message || err.message || 'Failed to send OTP';
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
     setLoading(false);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, action: () => void): void => {
+  const handleVerifyOTP = async () => {
+    setError('');
+    setSuccess('');
+
+    if (!formData.otp.trim()) {
+      setError('Please enter the OTP');
+      return;
+    }
+
+    if (formData.otp.length !== 6) {
+      setError('OTP must be 6 digits');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/verify-otp', {
+        phone: userPhone,
+        otp: formData.otp,
+      });
+
+      // Check if user is new
+      if (response.data.data.isNewUser) {
+        setCurrentView('details');
+        setSuccess('OTP verified! Please complete your profile');
+        toast.success('OTP verified!');
+      } else {
+        // Existing user - login directly
+        login(response.data.data.user);
+        toast.success('Welcome back!');
+        setSuccess('Welcome back! Redirecting...');
+        router.push('/');
+      }
+    } catch (err: any) {
+      const errorMsg = err.data?.message || err.message || 'Invalid OTP';
+      setError(errorMsg);
+      toast.error(errorMsg);
+    }
+    setLoading(false);
+  };
+
+  const handleCompleteProfile = async () => {
+    setError('');
+    setSuccess('');
+
+    if (!formData.name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+
+    if (formData.name.trim().length < 2) {
+      setError('Name must be at least 2 characters');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/complete-profile', {
+        phone: userPhone,
+        name: formData.name.trim(),
+      });
+
+      login(response.data.data.user);
+      toast.success('Account created successfully!');
+      setSuccess('Account created! Redirecting...');
+      router.push('/');
+    } catch (err: any) {
+      const errorMsg = err.data?.message || err.message || 'Failed to complete profile';
+      setError(errorMsg);
+      toast.error(errorMsg);
+    }
+    setLoading(false);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, action: () => void) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       action();
     }
   };
 
-  return ( <div className="bg-gradient-to-br flex-1 relative from-black via-gray-900 to-black flex  items-center justify-center p-4">
-      {/* Static background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -inset-10 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
-          <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        </div>
-      </div>
+  const handlePhoneInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const cleaned = value.replace(/\D/g, '').slice(0, 10);
+    setFormData(prev => ({ ...prev, phone: cleaned }));
+  };
 
+  return (
+    <PageContainer >
+    <div className="min-h-screen w-full flex items-center justify-center p-4">
       {/* Main container */}
-      <div className="relative w-full flex-1 max-w-md">
-        <div className="bg-black/30 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl p-8">
-          <div className="space-y-6">
-            {/* Login Form */}
-            {currentView === 'login' && (
-              <div className="space-y-6">
-                <div className="text-center space-y-2">
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    Welcome Back
+      <div className="w-full max-w-sm ">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 ">
+          <div className="space-y-8 ">
+            {/* Phone Input View */}
+            {currentView === 'phone' && (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="text-center space-y-3">
+                  <h1 className="text-3xl font-semibold text-gray-900">
+                    Welcome
                   </h1>
-                  <p className="text-gray-400">Sign in to your account</p>
+                  <p className="text-gray-500 text-sm">Sign in with your phone number</p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors w-5 h-5 pointer-events-none z-10" />
-                    <input
-                      type="email"
-                      placeholder="Email address"
-                      value={loginForm.email}
-                      onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
-                      onKeyPress={(e) => handleKeyPress(e, handleLogin)}
-                      className="w-full pl-10 pr-4 py-4 bg-black/20 backdrop-blur-sm border border-white/5 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:bg-black/30 transition-all duration-300"
-                    />
-                  </div>
-                  
-                  <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors w-5 h-5 pointer-events-none z-10" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Password"
-                      value={loginForm.password}
-                      onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                      onKeyPress={(e) => handleKeyPress(e, handleLogin)}
-                      className="w-full pl-10 pr-12 py-4 bg-black/20 backdrop-blur-sm border border-white/5 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:bg-black/30 transition-all duration-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors z-10"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setCurrentView('forgot')}
-                      className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
-                    >
-                      Forgot password?
-                    </button>
+                  <div className="relative">
+                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 focus-within:border-gray-900 focus-within:bg-white transition-all duration-200">
+                      <span className="text-lg mr-2">🇮🇳</span>
+                      {/* <span className="text-gray-700 font-medium">+91</span> */}
+                      <input
+                        type="tel"
+                        placeholder="Enter 10-digit number"
+                        value={formData.phone}
+                        onChange={handlePhoneInput}
+                        onKeyPress={(e) => handleKeyPress(e, handleSendOTP)}
+                        maxLength={10}
+                        className="w-full pl-3 bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-base"
+                      />
+                    </div>
                   </div>
 
                   {error && (
-                    <div className="flex items-center gap-3 p-4 rounded-xl backdrop-blur-sm border bg-red-950/40 border-red-500/30 text-red-200">
-                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-sm font-medium">{error}</span>
-                    </div>
-                  )}
-                  {success && (
-                    <div className="flex items-center gap-3 p-4 rounded-xl backdrop-blur-sm border bg-green-950/40 border-green-500/30 text-green-200">
-                      <CheckCircle className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-sm font-medium">{success}</span>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 animate-in slide-in-from-top duration-300">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm">{error}</span>
                     </div>
                   )}
 
                   <button
-                    onClick={handleLogin}
+                    onClick={handleSendOTP}
                     disabled={loading}
-                    className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/25"
+                    className="w-full py-3 rounded-lg font-medium text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {loading ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Loading...
-                      </div>
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Sending...
+                      </>
                     ) : (
-                      <div className="flex items-center justify-center gap-2">
-                        Sign In
-                        <ArrowRight className="w-5 h-5" />
-                      </div>
+                      <>
+                        Send OTP
+                        <ArrowRight className="w-4 h-4" />
+                      </>
                     )}
-                  </button>
-                </div>
-
-                <div className="text-center">
-                  <span className="text-gray-400">Don't have an account? </span>
-                  <button
-                    onClick={() => setCurrentView('signup')}
-                    className="text-blue-400 hover:text-blue-300 transition-colors font-semibold"
-                  >
-                    Sign up
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Signup Form */}
-            {currentView === 'signup' && (
-              <div className="space-y-6">
-                <div className="text-center space-y-2">
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    Create Account
+            {/* OTP Verification View */}
+            {currentView === 'otp' && (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="text-center space-y-3">
+                  <h1 className="text-3xl font-semibold text-gray-900">
+                    Verify OTP
                   </h1>
-                  <p className="text-gray-400">Join us today</p>
+                  <p className="text-gray-500 text-sm">Enter the 6-digit code sent to</p>
+                  <p className="text-gray-900 font-medium">+91 {userPhone}</p>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="relative group">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors w-5 h-5 pointer-events-none z-10" />
-                    <input
-                      type="text"
-                      placeholder="Full name"
-                      value={signupForm.name}
-                      onChange={(e) => setSignupForm(prev => ({ ...prev, name: e.target.value }))}
-                      onKeyPress={(e) => handleKeyPress(e, handleSignup)}
-                      className="w-full pl-10 pr-4 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all duration-300"
-                    />
-                  </div>
-                  
-                  <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors w-5 h-5 pointer-events-none z-10" />
-                    <input
-                      type="email"
-                      placeholder="Email address"
-                      value={signupForm.email}
-                      onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
-                      onKeyPress={(e) => handleKeyPress(e, handleSignup)}
-                      className="w-full pl-10 pr-4 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all duration-300"
-                    />
-                  </div>
-                  
-                  <div className="relative group">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors w-5 h-5 pointer-events-none z-10" />
-                    <input
-                      type="tel"
-                      placeholder="Phone number"
-                      value={signupForm.phone}
-                      onChange={(e) => setSignupForm(prev => ({ ...prev, phone: e.target.value }))}
-                      onKeyPress={(e) => handleKeyPress(e, handleSignup)}
-                      className="w-full pl-10 pr-4 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all duration-300"
-                    />
-                  </div>
-                  
-                  <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors w-5 h-5 pointer-events-none z-10" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Password (min 8 characters)"
-                      value={signupForm.password}
-                      onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))}
-                      onKeyPress={(e) => handleKeyPress(e, handleSignup)}
-                      className="w-full pl-10 pr-12 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all duration-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors z-10"
+                <div className="space-y-6">
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={6}
+                      value={formData.otp}
+                      onChange={(value) => setFormData(prev => ({ ...prev, otp: value }))}
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
+                      <InputOTPGroup className="gap-2">
+                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                          <InputOTPSlot
+                            key={index}
+                            index={index}
+                            className="w-12 h-12 text-lg font-semibold border border-gray-300 rounded-lg bg-white text-gray-900 focus:border-gray-900 focus:ring-0 transition-all duration-200"
+                          />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
                   </div>
 
                   {error && (
-                    <div className="flex items-center gap-3 p-4 rounded-xl backdrop-blur-sm border bg-red-950/40 border-red-500/30 text-red-200">
-                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-sm font-medium">{error}</span>
-                    </div>
-                  )}
-                  {success && (
-                    <div className="flex items-center gap-3 p-4 rounded-xl backdrop-blur-sm border bg-green-950/40 border-green-500/30 text-green-200">
-                      <CheckCircle className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-sm font-medium">{success}</span>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 animate-in slide-in-from-top duration-300">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm">{error}</span>
                     </div>
                   )}
 
                   <button
-                    onClick={handleSignup}
-                    disabled={loading}
-                    className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/25"
+                    onClick={handleVerifyOTP}
+                    disabled={loading || formData.otp.length !== 6}
+                    className="w-full py-3 rounded-lg font-medium text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {loading ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Loading...
-                      </div>
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Verifying...
+                      </>
                     ) : (
-                      <div className="flex items-center justify-center gap-2">
+                      <>
+                        Verify OTP
+                        <CheckCircle className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <button
+                    onClick={() => {
+                      setCurrentView('phone');
+                      setFormData(prev => ({ ...prev, otp: '' }));
+                    }}
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Change number
+                  </button>
+                  <div className="text-gray-500">
+                    {otpTimer > 0 ? (
+                      <span>Resend in <span className="text-gray-900 font-medium">{otpTimer}s</span></span>
+                    ) : (
+                      <button
+                        onClick={handleSendOTP}
+                        className="text-gray-900 hover:text-gray-600 transition-colors font-medium"
+                        disabled={loading}
+                      >
+                        Resend OTP
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Complete Profile View */}
+            {currentView === 'details' && (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="text-center space-y-3">
+                  <h1 className="text-3xl font-semibold text-gray-900">
+                    Complete Profile
+                  </h1>
+                  <p className="text-gray-500 text-sm">Tell us your name to get started</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="relative">
+                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 focus-within:border-gray-900 focus-within:bg-white transition-all duration-200">
+                      <User className="w-4 h-4 text-gray-400 mr-3" />
+                      <input
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onKeyPress={(e) => handleKeyPress(e, handleCompleteProfile)}
+                        className="w-full bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-base"
+                      />
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 animate-in slide-in-from-top duration-300">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm">{error}</span>
+                    </div>
+                  )}
+                  {success && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 animate-in slide-in-from-top duration-300">
+                      <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm">{success}</span>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleCompleteProfile}
+                    disabled={loading || !formData.name.trim()}
+                    className="w-full py-3 rounded-lg font-medium text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Creating account...
+                      </>
+                    ) : (
+                      <>
                         Create Account
-                        <ArrowRight className="w-5 h-5" />
-                      </div>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
                     )}
-                  </button>
-                </div>
-
-                <div className="text-center">
-                  <span className="text-gray-400">Already have an account? </span>
-                  <button
-                    onClick={() => setCurrentView('login')}
-                    className="text-blue-400 hover:text-blue-300 transition-colors font-semibold"
-                  >
-                    Sign in
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Forgot Password Form */}
-            {currentView === 'forgot' && (
-              <div className="space-y-6">
-                <div className="text-center space-y-2">
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    Reset Password
-                  </h1>
-                  <p className="text-gray-400">Enter your email to receive reset instructions</p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors w-5 h-5 pointer-events-none z-10" />
-                    <input
-                      type="email"
-                      placeholder="Email address"
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      onKeyPress={(e) => handleKeyPress(e, handleForgotPassword)}
-                      className="w-full pl-10 pr-4 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all duration-300"
-                    />
-                  </div>
-
-                  {error && (
-                    <div className="flex items-center gap-3 p-4 rounded-xl backdrop-blur-sm border bg-red-950/40 border-red-500/30 text-red-200">
-                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-sm font-medium">{error}</span>
-                    </div>
-                  )}
-                  {success && (
-                    <div className="flex items-center gap-3 p-4 rounded-xl backdrop-blur-sm border bg-green-950/40 border-green-500/30 text-green-200">
-                      <CheckCircle className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-sm font-medium">{success}</span>
-                    </div>
-                  )}
-
-                  <button
-                    onClick={handleForgotPassword}
-                    disabled={loading}
-                    className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/25"
-                  >
-                    {loading ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Loading...
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center gap-2">
-                        Send Reset Email
-                        <ArrowRight className="w-5 h-5" />
-                      </div>
-                    )}
-                  </button>
-                </div>
-
-                <div className="text-center">
-                  <button
-                    onClick={() => setCurrentView('login')}
-                    className="text-blue-400 hover:text-blue-300 transition-colors font-semibold flex items-center gap-2 mx-auto"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    Back to login
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Verification Message */}
-            {currentView === 'verification' && (
-              <div className="space-y-6 text-center">
-                <div className="space-y-4">
-                  <div className="w-20 h-20 mx-auto bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                    <Mail className="w-10 h-10 text-white" />
-                  </div>
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    Check Your Email
-                  </h1>
-                  <p className="text-gray-400 max-w-md mx-auto">
-                    We've sent a verification link to <span className="text-white font-semibold">{userEmail}</span>. 
-                    Please click the link to verify your account before signing in.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-xl">
-                    <div className="flex items-center gap-3 text-yellow-200">
-                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-sm font-medium">Check your email. verify your email to continue</span>
-                    </div>
-                  </div>
-
-                  <button 
-                    onClick={() => setCurrentView('login')}
-                    className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <ArrowLeft className="w-4 h-4" />
-                      Back to Sign In
-                    </div>
                   </button>
                 </div>
               </div>
             )}
           </div>
         </div>
-
-        {/* Decorative elements */}
-        <div className="absolute -top-4 -left-4 w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm"></div>
-        <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full blur-sm"></div>
       </div>
-
-      {/* Demo instructions */}
-      {/* <div className="absolute bottom-4 left-4 right-4 text-center">
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 max-w-md mx-auto">
-          <p className="text-gray-400 text-sm">
-            <strong>Demo:</strong> Login with test@example.com / password or try signup with any details
-          </p>
-        </div>
-      </div> */}
     </div>
-   
+    </PageContainer>
   );
-};
-
+}
