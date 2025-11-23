@@ -53,7 +53,7 @@ export default function AdminUserProfile() {
 
   })
   const {user:CurrentUser} = useAuthStore();
-
+  const {id} = useParams()
   const transactionTypesAllowed = CurrentUser?.role==Role_ENUM.ADMIN?TRANSACTIONS_TYPES:(CurrentUser?.role==Role_ENUM.SALES?TRANSACTIONS_TYPES_FOR_SALES:[])
   const [newTransactionLoading, setNewTransactionLoading] = useState(false);
   const handleAddTransaction = async()=>{
@@ -85,7 +85,7 @@ export default function AdminUserProfile() {
 
   const handleSave =async () => {
     try{
-        const resPromise = api.post('/users/update',editedUser);
+        const resPromise = api.post(`/users/update/${id}`,editedUser);
         toast.promise(resPromise,{loading:'Updating users','success':'user updated','error':'opps failed'})
         const res = await resPromise;
         setUser(res.data.data)
@@ -117,7 +117,7 @@ export default function AdminUserProfile() {
       currency: 'INR'
     }).format(amount)
   }
-  const {id} = useParams()
+
   const fetchUser = async()=>{
     try{
 
