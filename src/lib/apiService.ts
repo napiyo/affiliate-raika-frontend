@@ -31,7 +31,9 @@ api.interceptors.response.use(
       ) {
       
         if (typeof window !== "undefined") {
-          window.location.href = "/auth";
+          if (!window.location.pathname.startsWith('/auth')) {
+            window.location.href = "/auth";
+          }
         }
       }
     }
