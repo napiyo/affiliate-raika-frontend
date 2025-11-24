@@ -52,7 +52,7 @@ const chartConfig = {
   },
   points: {
     label: 'Points',
-    color: 'var(--primary-foreground)'
+    color: 'var(--primary)'
   }
 } satisfies ChartConfig;
   return (
