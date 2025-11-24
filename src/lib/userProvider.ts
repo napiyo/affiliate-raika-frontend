@@ -41,19 +41,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
     checkAuth();
   }, []); // Only run once on mount
 
-  // Show loading state while checking auth
-  if (isLoading) {
-    return (<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="animate-bounce">
-          <img 
-            src="/icon.png" 
-            alt="Loading" 
-            className="w-20 h-20 object-contain"
-          />
-        </div>
-      </div>
-    );
-  }
+ 
 
-  return {children};
+  return children;
 }
