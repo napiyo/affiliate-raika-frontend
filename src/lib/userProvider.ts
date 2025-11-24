@@ -31,7 +31,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
         // Only show error if it's not a 401 (unauthorized)
         if (error.response?.status !== 401) {
           // console.error('Auth check failed:', error);
-          toast.error("Not authorized")
+          // toast.error("Not authorized")
         }
       } finally {
         setLoading(false);

@@ -300,9 +300,9 @@ export default function AdminUsersPage() {
           </div>
 
           {/* TanStack Table */}
-          <div className="w-full overflow-x-auto min-w-0">
-            <div className="rounded-md border">
-              <Table>
+          <div className="w-full max-w-full overflow-x-auto min-w-0">
+            <div className="rounded-md border overflow-auto max-w-full">
+              <Table className="w-full max-w-full overflow-auto">
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>

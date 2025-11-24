@@ -387,6 +387,7 @@ const LeadsPage = () => {
                   value={leadForm.phone}
                   onChange={(e) => setLeadForm(prev => ({ ...prev, phone: e.target.value }))}
                   placeholder="Enter phone number"
+                  maxLength={10}
                 />
               </div>
               <div className="grid gap-2">
@@ -396,6 +397,7 @@ const LeadsPage = () => {
                   value={leadForm.alternatePhone}
                   onChange={(e) => setLeadForm(prev => ({ ...prev, alternatePhone: e.target.value }))}
                   placeholder="Enter alternate phone"
+                  maxLength={10}
                 />
               </div>
                <div className="flex flex-wrap gap-2">

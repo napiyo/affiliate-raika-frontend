@@ -223,7 +223,7 @@ export default function PhoneOTPAuth() {
                 <div className="space-y-4">
                   <div className="relative">
                     <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 focus-within:border-gray-900 focus-within:bg-white transition-all duration-200">
-                      <span className="text-lg mr-2">🇮🇳</span>
+                      <span className="text-lg font-bold text-gray-800 mr-2">+91</span>
                       {/* <span className="text-gray-700 font-medium">+91</span> */}
                       <input
                         type="tel"

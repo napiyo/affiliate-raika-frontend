@@ -816,7 +816,6 @@ export function TransactionCards({ transactions, user }: TransactionCardProps) {
                     Status
                   </div>
                   <div>
-                    {selectedTxn.status === 'SUCCESS' ? 'Success' : selectedTxn.status === 'FAILED' ? 'Failed' : 'Pending'}
                     <Badge variant={selectedTxn.status === 'SUCCESS' ? 'default' : 'secondary'}>
                           {selectedTxn.status}
                         </Badge>
